@@ -4,14 +4,22 @@ const analyticsSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
-    platform: { type: String, required: true }, // youtube | instagram | tiktok
+    platform: { type: String, required: true }, // youtube, instagram, facebook, etc.
 
-    title: String,
-    views: Number,
-    likes: Number,
-    comments: Number,
-    postedAt: Date,
+    metrics: {
+      totalViews: Number,
+      totalLikes: Number,
+      totalComments: Number,
+      totalShares: Number,
+      totalPosts: Number,
 
+      // You can extend later (CTR, engagement rate, reach, etc.)
+    },
+
+    rawItems: {
+      type: Array,
+      default: []
+    }
   },
   { timestamps: true }
 );

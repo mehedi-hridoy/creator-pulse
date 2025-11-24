@@ -22,9 +22,16 @@ export const handleJsonUpload = async (req, res, next) => {
       try {
         // 1. Parse JSON file
         const content = JSON.parse(file.buffer.toString());
+        console.log("Upload - File:", file.originalname);
+        console.log("Upload - JSON keys:", Object.keys(content));
+        console.log("Upload - Is Array:", Array.isArray(content));
+        if (Array.isArray(content)) {
+          console.log("Upload - First item keys:", Object.keys(content[0] || {}));
+        }
 
         // 2. Detect which platform this JSON belongs to
         const platform = detectPlatform(content);
+        console.log("Upload - Detected platform:", platform);
 
         if (!platform) {
           results.push({
@@ -43,6 +50,8 @@ export const handleJsonUpload = async (req, res, next) => {
         else if (platform === "tiktok") parsedData = parseTikTok(content);
         else if (platform === "facebook") parsedData = parseFacebook(content);
 
+        console.log("Upload - Parsed data count:", parsedData?.length || 0);
+
         if (!parsedData || parsedData.length === 0) {
           results.push({
             file: file.originalname,
@@ -54,9 +63,11 @@ export const handleJsonUpload = async (req, res, next) => {
 
         // 4. Normalize into database-friendly schema
         const normalized = normalizeData(parsedData, platform, req.userId);
+        console.log("Upload - Normalized count:", normalized?.length || 0);
 
         // 5. Save to DB
         await Analytics.insertMany(normalized);
+        console.log("Upload - Saved to DB successfully");
 
         // 6. Push successful result
         results.push({
@@ -66,15 +77,14 @@ export const handleJsonUpload = async (req, res, next) => {
           platform
         });
 
-        console.log("Normalized:", normalized);
-
       } catch (err) {
-        console.error("File error:", err);
+        console.error("File error:", err.message);
+        console.error("Stack:", err.stack);
 
         results.push({
           file: file.originalname,
           status: "rejected",
-          reason: "Invalid JSON file"
+          reason: err.message || "Invalid JSON file"
         });
       }
     }

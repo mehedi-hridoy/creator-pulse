@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import AuthContainer from "../components/auth/AuthContainer";
 import GoogleButton from "../components/auth/GoogleButton";
 import { motion } from "framer-motion";
+import ThemeToggle from "../components/ui/ThemeToggle";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -46,18 +47,26 @@ export default function Login() {
 
   return (
     <AuthContainer>
+      {/* Floating Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-2">
         {/* Left / Visual Panel */}
         <div className="relative hidden overflow-hidden md:block">
-          <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/40 via-brand-purple/40 to-brand-pink/40 opacity-40" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.4),transparent_60%)]" />
+          <div className="absolute inset-0 bg-brand-gradient opacity-30" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(108,99,255,0.4),transparent_60%)]" />
           <div className="flex h-full flex-col justify-between px-10 py-12">
             <div>
-              <h2 className="font-heading text-3xl font-semibold tracking-tight">
+              <h2 className="font-heading text-3xl font-semibold tracking-tight 
+                           text-light-text-primary dark:text-dark-text-primary">
                 Welcome back
               </h2>
-              <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/80">
-                Log in to unlock AI-powered insights on which content drives <span className="text-white">sales, sponsorships & memberships</span>.
+              <p className="mt-4 max-w-sm text-sm leading-relaxed 
+                          text-light-text-secondary dark:text-dark-text-secondary">
+                Log in to unlock AI-powered insights on which content drives{" "}
+                <span className="text-brand-from font-medium">sales, sponsorships & memberships</span>.
               </p>
             </div>
             <div className="space-y-4 text-xs">
@@ -70,11 +79,19 @@ export default function Login() {
         </div>
 
         {/* Right / Form Panel */}
-        <div className="relative border-l border-white/10 bg-black/60 p-8 md:p-10">
+        <div className="relative border-l border-light-border-soft dark:border-dark-border-soft 
+                      bg-light-card-DEFAULT dark:bg-dark-card-DEFAULT 
+                      p-8 md:p-10 transition-colors duration-300">
           <div className="mx-auto max-w-sm">
-            <h1 className="font-heading text-2xl font-semibold">Login to your account</h1>
-            <p className="mt-2 text-sm text-white/60">
-              Don&apos;t have an account? <Link to="/signup" className="text-brand-primary hover:text-white">Sign up</Link>
+            <h1 className="font-heading text-2xl font-semibold 
+                         text-light-text-primary dark:text-dark-text-primary">
+              Login to your account
+            </h1>
+            <p className="mt-2 text-sm text-light-text-muted dark:text-dark-text-muted">
+              Don&apos;t have an account?{" "}
+              <Link to="/signup" className="text-brand-from hover:text-brand-to transition-colors">
+                Sign up
+              </Link>
             </p>
             <div className="mt-6 space-y-4">
               <GoogleButton onClick={handleGoogleLogin} label="Sign in with Google" />
@@ -98,20 +115,32 @@ export default function Login() {
                     className="auth-input"
                   />
                 </Field>
-                {error && <p className="text-xs text-red-400">{error}</p>}
+                {error && <p className="text-xs text-status-danger">{error}</p>}
                 <motion.button
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.97 }}
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-xl bg-gradient-to-r from-brand-primary to-brand-purple px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-primary/30 transition disabled:opacity-60"
+                  className="w-full rounded-button bg-brand-gradient px-5 py-3 
+                           text-sm font-semibold text-white shadow-glow-brand 
+                           transition-all duration-200 disabled:opacity-60 
+                           hover:opacity-90"
                 >
                   {loading ? "Logging in..." : "Log in"}
                 </motion.button>
               </form>
             </div>
-            <p className="mt-6 text-center text-xs text-white/50">
-              By logging in you agree to our <a href="#" className="underline decoration-white/30 hover:text-white">Terms</a> & <a href="#" className="underline decoration-white/30 hover:text-white">Privacy</a>.
+            <p className="mt-6 text-center text-xs text-light-text-muted dark:text-dark-text-muted">
+              By logging in you agree to our{" "}
+              <a href="#" className="underline decoration-light-border-soft dark:decoration-dark-border-soft 
+                                   hover:text-light-text-primary dark:hover:text-dark-text-primary">
+                Terms
+              </a>{" "}
+              &{" "}
+              <a href="#" className="underline decoration-light-border-soft dark:decoration-dark-border-soft 
+                                   hover:text-light-text-primary dark:hover:text-dark-text-primary">
+                Privacy
+              </a>.
             </p>
           </div>
         </div>
@@ -122,8 +151,11 @@ export default function Login() {
 
 function Feature({ text }) {
   return (
-    <div className="flex items-center gap-2 text-white/80">
-      <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-white/10 text-[10px] font-bold text-white/70">✓</span>
+    <div className="flex items-center gap-2 text-light-text-secondary dark:text-dark-text-secondary">
+      <span className="inline-flex h-5 w-5 items-center justify-center rounded-md 
+                     bg-brand-from/20 text-[10px] font-bold text-brand-from">
+        ✓
+      </span>
       <span className="text-[13px] tracking-tight">{text}</span>
     </div>
   );
@@ -131,7 +163,7 @@ function Feature({ text }) {
 
 function Field({ label, children }) {
   return (
-    <label className="block text-xs font-medium text-white/60">
+    <label className="block text-xs font-medium text-light-text-muted dark:text-dark-text-muted">
       {label}
       <div className="mt-1">{children}</div>
     </label>
@@ -140,10 +172,11 @@ function Field({ label, children }) {
 
 function Divider({ label }) {
   return (
-    <div className="flex items-center gap-3 text-[11px] text-white/40">
-      <div className="h-px flex-1 bg-white/10" />
+    <div className="flex items-center gap-3 text-[11px] 
+                  text-light-text-muted dark:text-dark-text-muted">
+      <div className="h-px flex-1 bg-light-border-soft dark:bg-dark-border-soft" />
       <span>{label}</span>
-      <div className="h-px flex-1 bg-white/10" />
+      <div className="h-px flex-1 bg-light-border-soft dark:bg-dark-border-soft" />
     </div>
   );
 }

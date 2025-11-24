@@ -3,58 +3,126 @@ import axios from "axios";
 import {
   AreaChart,
   Area,
-  PieChart,
-  Pie,
   BarChart,
   Bar,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
+  LineChart,
+  Line,
+  ComposedChart,
 } from "recharts";
 import { 
   Eye, 
-  ThumbsUp, 
+  Heart, 
   MessageCircle, 
   TrendingUp, 
   FileText,
-  Users,
-  Activity
+  Share2,
+  Play,
+  ArrowUpRight,
+  ArrowDownRight,
+  Calendar,
+  BarChart3,
+  PieChart as PieChartIcon
 } from "lucide-react";
 import Layout from "../layout/Layout";
-import UserProfile from "../components/dashboard/UserProfile";
-import { Card, MetricCard, PlatformCard } from "../components/ui/Card";
+import { useAuthStore } from "../stores/authStore";
 
 axios.defaults.withCredentials = true;
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
 
-// Platform color mapping (exact spec colors)
-const PLATFORM_COLORS = {
-  youtube: '#ff4d4f',
-  tiktok: '#3cbaff',
-  facebook: '#7b61ff',
-  instagram: '#E1306C',
+// Real SVG Platform Logos - With proper fills
+const YouTubeLogo = ({ className, color = "#FF0000" }) => (
+  <svg className={className} viewBox="0 0 24 24">
+    <path fill={color} d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+);
+
+const TikTokLogo = ({ className, color = "#000000" }) => (
+  <svg className={className} viewBox="0 0 24 24">
+    <path fill={color} d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+  </svg>
+);
+
+const InstagramLogo = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24">
+    <defs>
+      <linearGradient id="instagram-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#FFDC80"/>
+        <stop offset="25%" stopColor="#F77737"/>
+        <stop offset="50%" stopColor="#E1306C"/>
+        <stop offset="75%" stopColor="#C13584"/>
+        <stop offset="100%" stopColor="#833AB4"/>
+      </linearGradient>
+    </defs>
+    <path fill="url(#instagram-gradient)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+  </svg>
+);
+
+const FacebookLogo = ({ className, color = "#1877F2" }) => (
+  <svg className={className} viewBox="0 0 24 24">
+    <path fill={color} d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+  </svg>
+);
+
+// Platform brand colors - official colors with real logos
+const PLATFORM_CONFIG = {
+  youtube: { 
+    color: '#FF0000', 
+    bgColor: '#FEE2E2',
+    darkBgColor: '#450a0a',
+    Logo: YouTubeLogo,
+  },
+  tiktok: { 
+    color: '#000000',
+    bgColor: '#F1F5F9',
+    darkBgColor: '#1e293b',
+    Logo: TikTokLogo,
+  },
+  facebook: { 
+    color: '#1877F2',
+    bgColor: '#DBEAFE',
+    darkBgColor: '#1e3a5f',
+    Logo: FacebookLogo,
+  },
+  instagram: { 
+    color: '#E4405F',
+    bgColor: '#FCE7F3',
+    darkBgColor: '#4a1d34',
+    Logo: InstagramLogo,
+  },
 };
 
-// Premium tooltip styling
+const formatNumber = (num) => {
+  if (!num) return '0';
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+  return num.toLocaleString();
+};
+
+const formatPercent = (num) => {
+  if (!num) return '0.00';
+  return num.toFixed(2);
+};
+
+// Premium glassmorphic tooltip
 const CustomTooltip = ({ active, payload, label }) => {
-  if (!active || !payload || !payload.length) return null;
+  if (!active || !payload?.length) return null;
   
   return (
-    <div className="bg-[rgba(15,18,32,0.95)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-lg p-3 shadow-premium">
-      <p className="text-label text-text-muted mb-2">{label}</p>
-      {payload.map((entry, index) => (
-        <div key={index} className="flex items-center gap-2">
-          <div 
-            className="w-2 h-2 rounded-full" 
-            style={{ backgroundColor: entry.color }}
-          />
-          <span className="text-body text-text-secondary">{entry.name}:</span>
-          <span className="text-body text-text-primary font-medium">
-            {typeof entry.value === 'number' ? formatNumber(entry.value) : entry.value}
+    <div className="backdrop-blur-xl bg-white/90 dark:bg-slate-900/90 
+                    border border-white/20 dark:border-slate-700/50 
+                    rounded-2xl px-4 py-3 shadow-2xl shadow-black/10">
+      <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">{label}</p>
+      {payload.map((entry, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+          <span className="text-sm text-slate-600 dark:text-slate-300">{entry.name}:</span>
+          <span className="text-sm font-semibold text-slate-900 dark:text-white">
+            {formatNumber(entry.value)}
           </span>
         </div>
       ))}
@@ -62,13 +130,172 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-const formatNumber = (num) => {
-  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-  return num?.toLocaleString() || '0';
+// Stat Card with glassmorphism
+const StatCard = ({ label, value, change, icon: Icon, color, delay = 0 }) => {
+  const isPositive = change > 0;
+  
+  return (
+    <div 
+      className="group relative"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      {/* Glassmorphic card */}
+      <div className="relative overflow-hidden rounded-3xl 
+                    bg-white/70 dark:bg-slate-800/50
+                    backdrop-blur-xl
+                    border border-white/50 dark:border-slate-700/50
+                    shadow-xl shadow-slate-200/50 dark:shadow-black/20
+                    p-6 transition-all duration-500
+                    hover:shadow-2xl hover:shadow-slate-300/50 dark:hover:shadow-black/30
+                    hover:-translate-y-1 hover:border-white/80 dark:hover:border-slate-600/50">
+        
+        {/* Gradient orb background */}
+        <div className={`absolute -top-10 -right-10 w-32 h-32 rounded-full 
+                        bg-gradient-to-br ${color} opacity-20 blur-2xl 
+                        group-hover:opacity-30 transition-opacity duration-500`} />
+        
+        {/* Content */}
+        <div className="relative z-10">
+          <div className="flex items-start justify-between mb-4">
+            <div className={`p-3 rounded-2xl bg-gradient-to-br ${color} shadow-lg`}>
+              <Icon className="w-5 h-5 text-white" />
+            </div>
+            {change !== undefined && (
+              <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold
+                            ${isPositive 
+                              ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' 
+                              : 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400'}`}>
+                {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                {Math.abs(change).toFixed(1)}%
+              </div>
+            )}
+          </div>
+          
+          <div className="space-y-1">
+            <p className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+              {value}
+            </p>
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              {label}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
+// Platform Card - Premium Design with Hover Glow Effects
+const PlatformCard = ({ platform, views, engagement, posts }) => {
+  const config = PLATFORM_CONFIG[platform.toLowerCase()] || PLATFORM_CONFIG.youtube;
+  const Logo = config.Logo;
+  
+  return (
+    <div 
+      className="group relative overflow-hidden rounded-2xl transition-all duration-500 cursor-pointer
+                 bg-white dark:bg-slate-900
+                 border border-slate-200 dark:border-slate-700/80
+                 hover:-translate-y-2 hover:scale-[1.02]
+                 hover:border-transparent"
+      style={{
+        '--glow-color': config.color,
+      }}
+    >
+      {/* Hover glow effect */}
+      <div 
+        className="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm -z-10"
+        style={{ background: `linear-gradient(135deg, ${config.color}40, ${config.color}20, transparent)` }}
+      />
+      
+      {/* Animated glow ring on hover */}
+      <div 
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"
+        style={{ 
+          boxShadow: `0 0 30px ${config.color}30, 0 0 60px ${config.color}15, inset 0 1px 1px ${config.color}10`,
+        }}
+      />
+      
+      {/* Top accent line with glow */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-1 transition-all duration-300 group-hover:h-1.5"
+        style={{ 
+          backgroundColor: config.color,
+          boxShadow: `0 2px 10px ${config.color}50`
+        }} 
+      />
+      
+      {/* Content */}
+      <div className="relative z-10 p-6">
+        {/* Header with colored logo container */}
+        <div className="flex items-center gap-4 mb-6">
+          {/* Light mode bg */}
+          <div 
+            className="w-14 h-14 rounded-xl flex items-center justify-center dark:hidden transition-transform duration-300 group-hover:scale-110"
+            style={{ 
+              backgroundColor: config.bgColor,
+              boxShadow: `0 4px 12px ${config.color}20`
+            }}
+          >
+            <Logo className="w-7 h-7" color={config.color} />
+          </div>
+          {/* Dark mode bg */}
+          <div 
+            className="w-14 h-14 rounded-xl items-center justify-center hidden dark:flex transition-transform duration-300 group-hover:scale-110"
+            style={{ 
+              backgroundColor: config.darkBgColor,
+              boxShadow: `0 4px 12px ${config.color}30`
+            }}
+          >
+            <Logo className="w-7 h-7" color={config.color} />
+          </div>
+          <div>
+            <h4 className="font-bold text-slate-900 dark:text-white capitalize text-lg">
+              {platform}
+            </h4>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Platform Performance
+            </p>
+          </div>
+        </div>
+        
+        {/* Main stat - Views */}
+        <div className="mb-5">
+          <p className="text-5xl font-bold text-slate-900 dark:text-white tracking-tight transition-transform duration-300 group-hover:scale-105 origin-left">
+            {formatNumber(views)}
+          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            total views
+          </p>
+        </div>
+        
+        {/* Secondary stats */}
+        <div className="flex items-center gap-10 pt-5 border-t border-slate-100 dark:border-slate-800">
+          <div className="transition-transform duration-300 group-hover:translate-x-1">
+            <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+              Engagement
+            </p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white">
+              {formatPercent(engagement)}%
+            </p>
+          </div>
+          <div className="transition-transform duration-300 group-hover:translate-x-1" style={{ transitionDelay: '50ms' }}>
+            <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+              Posts
+            </p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white">
+              {posts}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main Dashboard Component
 export default function Dashboard() {
+  const { user } = useAuthStore();
+  
   const { data, isLoading, error } = useQuery({
     queryKey: ["overview"],
     queryFn: async () => {
@@ -77,285 +304,455 @@ export default function Dashboard() {
     },
   });
 
+  // Loading state
   if (isLoading) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-[rgba(255,255,255,0.1)] border-t-premium-purple rounded-full animate-spin" />
-            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-premium-blue rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1s' }} />
+            <div className="w-16 h-16 rounded-full border-4 border-slate-200 dark:border-slate-700 
+                          border-t-violet-500 animate-spin" />
           </div>
         </div>
       </Layout>
     );
   }
 
+  // Empty state
   if (error || !data) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Card className="p-8 text-center max-w-md" hover={false}>
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-premium-purple/20 to-premium-blue/20 flex items-center justify-center">
-              <FileText className="h-8 w-8 text-premium-purple" />
+          <div className="text-center max-w-md p-8 rounded-3xl 
+                        bg-white/60 dark:bg-slate-800/40 backdrop-blur-xl
+                        border border-white/50 dark:border-slate-700/50">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl 
+                          bg-gradient-to-br from-violet-500 to-purple-600 
+                          flex items-center justify-center">
+              <FileText className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-section-title text-text-primary mb-2">No Analytics Data Yet</h3>
-            <p className="text-body text-text-secondary">Upload your platform JSON files to see insights here.</p>
-          </Card>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+              No Analytics Yet
+            </h3>
+            <p className="text-slate-500 dark:text-slate-400">
+              Upload your platform data to unlock powerful insights.
+            </p>
+          </div>
         </div>
       </Layout>
     );
   }
 
-  // Format monthly trend for line chart
+  // Prepare chart data
   const monthlyData = Object.entries(data.monthlyTrend || {})
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([month, views]) => ({
-      month: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
-      Views: views,
+      month: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short' }),
+      views,
+      likes: Math.floor(views * 0.05),
+      comments: Math.floor(views * 0.008),
     }));
 
-  // Format platform data for donut chart
-  const platformDonutData = (data.perPlatform || []).map((p) => ({
+  // Platform comparison data for bar chart
+  const platformData = (data.perPlatform || []).map(p => ({
     name: p.platform.charAt(0).toUpperCase() + p.platform.slice(1),
-    value: p.views,
-    color: PLATFORM_COLORS[p.platform.toLowerCase()] || '#7b61ff',
+    views: p.views,
+    likes: p.likes,
+    comments: p.comments,
+    fill: PLATFORM_CONFIG[p.platform.toLowerCase()]?.color || '#8B5CF6'
   }));
 
-  // Format platform bars for engagement
-  const platformBars = (data.perPlatform || []).map((p) => ({
-    platform: p.platform.charAt(0).toUpperCase() + p.platform.slice(1),
-    Views: p.views,
-    Likes: p.likes,
-    Comments: p.comments,
-  }));
-
-  // Generate simple sparkline data for metrics (last 7 days simulation)
-  const generateSparkline = (baseValue) => {
-    return Array.from({ length: 7 }, () => baseValue * (0.7 + Math.random() * 0.6));
-  };
+  // Time greeting
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const userName = user?.username || data.username || 'Creator';
 
   return (
     <Layout>
-      <div className="space-y-8">
-        {/* HEADER WITH USER PROFILE */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 animate-in fade-in duration-300">
-          <div>
-            <h1 className="text-page-title md:text-[32px] text-text-primary mb-2">
-              Dashboard Overview
-            </h1>
-            <p className="text-body text-text-secondary">
-              Track your content performance across all platforms
-            </p>
+      <div className="space-y-8 pb-8">
+        
+        {/* ═══════════════════════════════════════════════════════════════
+            HEADER - Personalized Welcome
+        ═══════════════════════════════════════════════════════════════ */}
+        <header className="relative">
+          {/* Background gradient orbs */}
+          <div className="absolute -top-20 -left-20 w-72 h-72 bg-violet-500/20 rounded-full blur-3xl" />
+          <div className="absolute -top-10 right-0 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl" />
+          
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+            <div className="space-y-2">
+              <p className="text-slate-500 dark:text-slate-400 font-medium">
+                {greeting} 👋
+              </p>
+              <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
+                Welcome, <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 
+                                        bg-clip-text text-transparent">{userName}</span>
+              </h1>
+              <p className="text-lg text-slate-600 dark:text-slate-300 max-w-xl">
+                Your content reached <span className="font-semibold text-violet-600 dark:text-violet-400">
+                {formatNumber(data.totalViews)}</span> people. 
+                {data.growth?.viewsGrowth > 0 ? " Keep up the amazing work! 🚀" : " Let's grow together!"}
+              </p>
+            </div>
+            
+            {/* Quick date range indicator */}
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full 
+                          bg-white/60 dark:bg-slate-800/40 backdrop-blur-xl
+                          border border-white/50 dark:border-slate-700/50">
+              <Calendar className="w-4 h-4 text-slate-500" />
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                Last 30 days
+              </span>
+            </div>
           </div>
-          <div className="lg:w-80 shrink-0">
-            <UserProfile />
-          </div>
-        </div>
+        </header>
 
-        {/* TOP STATS ROW - 4 Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-          <MetricCard
-            title="Total Views"
+        {/* ═══════════════════════════════════════════════════════════════
+            STATS GRID - Key Metrics
+        ═══════════════════════════════════════════════════════════════ */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            label="Total Views"
             value={formatNumber(data.totalViews)}
-            icon={<Eye className="w-5 h-5" />}
-            trendValue={data.growth?.viewsGrowth}
-            sparklineData={generateSparkline(data.totalViews)}
+            change={data.growth?.viewsGrowth}
+            icon={Eye}
+            color="from-violet-500 to-purple-600"
+            delay={0}
           />
-          <MetricCard
-            title="Total Likes"
+          <StatCard
+            label="Total Likes"
             value={formatNumber(data.totalLikes)}
-            icon={<ThumbsUp className="w-5 h-5" />}
-            sparklineData={generateSparkline(data.totalLikes)}
+            icon={Heart}
+            color="from-pink-500 to-rose-500"
+            delay={50}
           />
-          <MetricCard
-            title="Total Comments"
+          <StatCard
+            label="Comments"
             value={formatNumber(data.totalComments)}
-            icon={<MessageCircle className="w-5 h-5" />}
-            sparklineData={generateSparkline(data.totalComments)}
+            icon={MessageCircle}
+            color="from-amber-500 to-orange-500"
+            delay={100}
           />
-          <MetricCard
-            title="Engagement Rate"
-            value={`${data.engagementRate?.toFixed(2) || 0}%`}
-            icon={<Activity className="w-5 h-5" />}
-            trendValue={data.growth?.engagementGrowth}
-            sparklineData={generateSparkline(data.engagementRate || 0)}
+          <StatCard
+            label="Engagement Rate"
+            value={`${formatPercent(data.engagementRate)}%`}
+            change={data.growth?.engagementGrowth}
+            icon={TrendingUp}
+            color="from-emerald-500 to-teal-500"
+            delay={150}
           />
-        </div>
+        </section>
 
-        {/* MONTHLY VIEWS TREND - Large Horizontal Card */}
-        <Card className="p-6 md:p-card" hover={false}>
-          <div className="mb-6">
-            <h3 className="text-section-title text-text-primary mb-1">Monthly Views Trend</h3>
-            <p className="text-body text-text-secondary">Content performance over time</p>
-          </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <AreaChart data={monthlyData}>
-              <defs>
-                <linearGradient id="viewsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3cbaff" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#7b61ff" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid 
-                strokeDasharray="3 3" 
-                stroke="rgba(255,255,255,0.05)" 
-                vertical={false}
-              />
-              <XAxis 
-                dataKey="month" 
-                stroke="rgba(255,255,255,0.4)" 
-                style={{ fontSize: '12px' }}
-                tick={{ fill: 'rgba(255,255,255,0.6)' }}
-              />
-              <YAxis 
-                stroke="rgba(255,255,255,0.4)" 
-                style={{ fontSize: '12px' }}
-                tick={{ fill: 'rgba(255,255,255,0.6)' }}
-                tickFormatter={formatNumber}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Area
-                type="monotone"
-                dataKey="Views"
-                stroke="#3cbaff"
-                strokeWidth={2}
-                fill="url(#viewsGradient)"
-                animationDuration={300}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </Card>
-
-        {/* CHARTS ROW - Platform Distribution & Performance */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* PLATFORM DISTRIBUTION - Donut Chart */}
-          <Card className="p-6 md:p-card" hover={false}>
-            <div className="mb-6">
-              <h3 className="text-section-title text-text-primary mb-1">Platform Distribution</h3>
-              <p className="text-body text-text-secondary">Views by platform</p>
+        {/* ═══════════════════════════════════════════════════════════════
+            MAIN CHART - Growth Over Time
+        ═══════════════════════════════════════════════════════════════ */}
+        <section className="relative overflow-hidden rounded-3xl 
+                          bg-white/70 dark:bg-slate-800/50
+                          backdrop-blur-xl
+                          border border-white/50 dark:border-slate-700/50
+                          shadow-xl shadow-slate-200/50 dark:shadow-black/20
+                          p-6 lg:p-8">
+          
+          {/* Decorative gradient */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] 
+                        bg-gradient-to-br from-violet-500/10 via-purple-500/5 to-transparent 
+                        rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/25">
+                  <BarChart3 className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                    Growth Analytics
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Views, likes & engagement over time
+                  </p>
+                </div>
+              </div>
+              
+              {/* Legend */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-violet-500" />
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Views</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-pink-500" />
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Likes</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-amber-500" />
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Comments</span>
+                </div>
+              </div>
             </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
-                <Pie
-                  data={platformDonutData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={3}
-                  dataKey="value"
-                  animationDuration={300}
-                >
-                  {platformDonutData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  verticalAlign="middle" 
-                  align="right"
-                  layout="vertical"
-                  iconType="circle"
-                  wrapperStyle={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </Card>
-
-          {/* PLATFORM PERFORMANCE - Bar Chart */}
-          <Card className="p-6 md:p-card" hover={false}>
-            <div className="mb-6">
-              <h3 className="text-section-title text-text-primary mb-1">Platform Performance</h3>
-              <p className="text-body text-text-secondary">Engagement metrics by platform</p>
-            </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={platformBars}>
+            
+            {/* Chart */}
+            <ResponsiveContainer width="100%" height={350}>
+              <ComposedChart data={monthlyData}>
+                <defs>
+                  <linearGradient id="viewsArea" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#8B5CF6" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="#8B5CF6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid 
                   strokeDasharray="3 3" 
-                  stroke="rgba(255,255,255,0.05)" 
+                  stroke="currentColor"
+                  className="text-slate-200 dark:text-slate-700"
                   vertical={false}
                 />
                 <XAxis 
-                  dataKey="platform" 
-                  stroke="rgba(255,255,255,0.4)" 
-                  style={{ fontSize: '12px' }}
-                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                  dataKey="month" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'currentColor', fontSize: 12 }}
+                  className="text-slate-500 dark:text-slate-400"
                 />
                 <YAxis 
-                  stroke="rgba(255,255,255,0.4)" 
-                  style={{ fontSize: '12px' }}
-                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'currentColor', fontSize: 12 }}
                   tickFormatter={formatNumber}
+                  className="text-slate-500 dark:text-slate-400"
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  wrapperStyle={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}
+                <Area
+                  type="monotone"
+                  dataKey="views"
+                  stroke="#8B5CF6"
+                  strokeWidth={3}
+                  fill="url(#viewsArea)"
+                  dot={false}
+                  activeDot={{ r: 6, fill: '#8B5CF6', stroke: '#fff', strokeWidth: 2 }}
                 />
-                <Bar dataKey="Views" fill="#3cbaff" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="Likes" fill="#7b61ff" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="Comments" fill="#E1306C" radius={[8, 8, 0, 0]} />
+                <Line 
+                  type="monotone" 
+                  dataKey="likes" 
+                  stroke="#EC4899" 
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 5, fill: '#EC4899', stroke: '#fff', strokeWidth: 2 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="comments" 
+                  stroke="#F59E0B" 
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={false}
+                  activeDot={{ r: 5, fill: '#F59E0B', stroke: '#fff', strokeWidth: 2 }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════
+            PLATFORM OVERVIEW - Full Width Section
+        ═══════════════════════════════════════════════════════════════ */}
+        <section className="relative overflow-hidden rounded-3xl 
+                        bg-white/70 dark:bg-slate-800/50
+                        backdrop-blur-xl
+                        border border-white/50 dark:border-slate-700/50
+                        shadow-xl shadow-slate-200/50 dark:shadow-black/20
+                        p-6 lg:p-8">
+            
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/25">
+              <PieChartIcon className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                Platform Overview
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Performance by platform
+              </p>
+            </div>
+          </div>
+          
+          {/* Responsive grid: 1 col mobile, 2 col large screens with max-width cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 xl:gap-10 max-w-5xl">
+            {(data.perPlatform || []).map((platform) => (
+              <PlatformCard
+                key={platform.platform}
+                platform={platform.platform}
+                views={platform.views}
+                engagement={platform.engagementRate}
+                posts={platform.posts}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════
+            PLATFORM COMPARISON - Full Width Section
+        ═══════════════════════════════════════════════════════════════ */}
+        <section className="relative overflow-hidden rounded-3xl 
+                        bg-white/70 dark:bg-slate-800/50
+                        backdrop-blur-xl
+                        border border-white/50 dark:border-slate-700/50
+                        shadow-xl shadow-slate-200/50 dark:shadow-black/20
+                        p-6 lg:p-8">
+            
+          <div className="absolute top-0 right-0 w-64 h-64 
+                        bg-gradient-to-br from-pink-500/10 to-transparent 
+                        rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex items-center gap-4 mb-6 relative z-10">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-500 shadow-lg shadow-pink-500/25">
+              <BarChart3 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                Platform Comparison
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Views across platforms
+              </p>
+            </div>
+          </div>
+          
+          <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={platformData} layout="vertical" barSize={24}>
+                <XAxis 
+                  type="number" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'currentColor', fontSize: 11 }}
+                  tickFormatter={formatNumber}
+                  className="text-slate-500 dark:text-slate-400"
+                />
+                <YAxis 
+                  type="category" 
+                  dataKey="name" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'currentColor', fontSize: 12, fontWeight: 500 }}
+                  className="text-slate-600 dark:text-slate-300"
+                  width={80}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar 
+                  dataKey="views" 
+                  radius={[0, 8, 8, 0]}
+                  fill="#8B5CF6"
+                >
+                  {platformData.map((entry, index) => (
+                    <defs key={index}>
+                      <linearGradient id={`bar-${index}`} x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor={entry.fill} stopOpacity={0.8} />
+                        <stop offset="100%" stopColor={entry.fill} stopOpacity={1} />
+                      </linearGradient>
+                    </defs>
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </Card>
-        </div>
+        </section>
 
-        {/* TOP PERFORMING CONTENT - Premium Table */}
-        <Card className="p-6 md:p-card overflow-hidden" hover={false}>
-          <div className="mb-6">
-            <h3 className="text-section-title text-text-primary mb-1">Top Performing Content</h3>
-            <p className="text-body text-text-secondary">Your best posts by views</p>
+        {/* ═══════════════════════════════════════════════════════════════
+            TOP CONTENT TABLE
+        ═══════════════════════════════════════════════════════════════ */}
+        <section className="relative overflow-hidden rounded-3xl 
+                          bg-white/70 dark:bg-slate-800/50
+                          backdrop-blur-xl
+                          border border-white/50 dark:border-slate-700/50
+                          shadow-xl shadow-slate-200/50 dark:shadow-black/20
+                          p-6 lg:p-8">
+          
+          <div className="absolute top-0 right-0 w-96 h-96 
+                        bg-gradient-to-br from-emerald-500/10 to-transparent 
+                        rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex items-center gap-4 mb-6 relative z-10">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25">
+              <Play className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                Top Performing Content
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Your best posts by engagement
+              </p>
+            </div>
           </div>
           
           {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto relative z-10">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[rgba(255,255,255,0.08)]">
-                  <th className="text-left py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Platform</th>
-                  <th className="text-right py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Views</th>
-                  <th className="text-right py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Likes</th>
-                  <th className="text-right py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Comments</th>
-                  <th className="text-right py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Shares</th>
-                  <th className="text-left py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Posted</th>
+                <tr className="border-b border-slate-200/50 dark:border-slate-700/50">
+                  <th className="text-left py-4 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Platform
+                  </th>
+                  <th className="text-right py-4 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Views
+                  </th>
+                  <th className="text-right py-4 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Likes
+                  </th>
+                  <th className="text-right py-4 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Comments
+                  </th>
+                  <th className="text-right py-4 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Shares
+                  </th>
+                  <th className="text-right py-4 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Date
+                  </th>
                 </tr>
               </thead>
-              <tbody>
-                {(data.topPosts || []).map((post, idx) => {
-                  const platformColor = PLATFORM_COLORS[post.platform.toLowerCase()] || '#7b61ff';
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {(data.topPosts || []).slice(0, 5).map((post, idx) => {
+                  const config = PLATFORM_CONFIG[post.platform.toLowerCase()] || PLATFORM_CONFIG.youtube;
+                  const Logo = config.Logo;
                   return (
                     <tr 
-                      key={idx} 
-                      className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.03)] transition-colors duration-150"
+                      key={idx}
+                      className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
                     >
-                      <td className="py-3 px-4">
-                        <span 
-                          className="inline-flex items-center px-2.5 py-1 rounded-md text-label font-medium"
-                          style={{ 
-                            backgroundColor: `${platformColor}22`,
-                            color: platformColor 
-                          }}
-                        >
-                          {post.platform.charAt(0).toUpperCase() + post.platform.slice(1)}
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="w-9 h-9 rounded-xl flex items-center justify-center"
+                            style={{ backgroundColor: config.bgColor }}
+                          >
+                            <Logo className="w-5 h-5" color={config.color} />
+                          </div>
+                          <span className="font-medium text-slate-900 dark:text-white capitalize">
+                            {post.platform}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-right">
+                        <span className="font-semibold text-slate-900 dark:text-white">
+                          {formatNumber(post.views)}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-right text-body text-text-primary font-semibold">
-                        {formatNumber(post.views)}
-                      </td>
-                      <td className="py-3 px-4 text-right text-body text-text-secondary">
+                      <td className="py-4 px-4 text-right text-slate-600 dark:text-slate-400">
                         {formatNumber(post.likes)}
                       </td>
-                      <td className="py-3 px-4 text-right text-body text-text-secondary">
+                      <td className="py-4 px-4 text-right text-slate-600 dark:text-slate-400">
                         {formatNumber(post.comments)}
                       </td>
-                      <td className="py-3 px-4 text-right text-body text-text-secondary">
+                      <td className="py-4 px-4 text-right text-slate-600 dark:text-slate-400">
                         {formatNumber(post.shares)}
                       </td>
-                      <td className="py-3 px-4 text-body text-text-secondary">
-                        {post.postedAt ? new Date(post.postedAt).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric', 
-                          year: 'numeric' 
-                        }) : "N/A"}
+                      <td className="py-4 px-4 text-right text-slate-500 dark:text-slate-500 text-sm">
+                        {post.postedAt 
+                          ? new Date(post.postedAt).toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric' 
+                            })
+                          : '—'}
                       </td>
                     </tr>
                   );
@@ -364,69 +761,58 @@ export default function Dashboard() {
             </table>
           </div>
 
-          {/* Mobile Stacked Cards */}
-          <div className="md:hidden space-y-3">
-            {(data.topPosts || []).map((post, idx) => {
-              const platformColor = PLATFORM_COLORS[post.platform.toLowerCase()] || '#7b61ff';
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-3 relative z-10">
+            {(data.topPosts || []).slice(0, 5).map((post, idx) => {
+              const config = PLATFORM_CONFIG[post.platform.toLowerCase()] || PLATFORM_CONFIG.youtube;
+              const Logo = config.Logo;
               return (
                 <div 
                   key={idx}
-                  className="p-4 rounded-lg bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)]"
+                  className="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/30 
+                           border border-slate-200/50 dark:border-slate-700/50"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <span 
-                      className="inline-flex items-center px-2.5 py-1 rounded-md text-label font-medium"
-                      style={{ 
-                        backgroundColor: `${platformColor}22`,
-                        color: platformColor 
-                      }}
-                    >
-                      {post.platform.charAt(0).toUpperCase() + post.platform.slice(1)}
-                    </span>
-                    <span className="text-label text-text-muted">
-                      {post.postedAt ? new Date(post.postedAt).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric' 
-                      }) : "N/A"}
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-9 h-9 rounded-xl flex items-center justify-center"
+                        style={{ backgroundColor: config.bgColor }}
+                      >
+                        <Logo className="w-5 h-5" color={config.color} />
+                      </div>
+                      <span className="font-medium text-slate-900 dark:text-white capitalize">
+                        {post.platform}
+                      </span>
+                    </div>
+                    <span className="text-xs text-slate-500">
+                      {post.postedAt 
+                        ? new Date(post.postedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                        : '—'}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-4 gap-2 text-center">
                     <div>
-                      <p className="text-label text-text-muted">Views</p>
-                      <p className="text-body text-text-primary font-semibold">{formatNumber(post.views)}</p>
+                      <p className="text-lg font-bold text-slate-900 dark:text-white">{formatNumber(post.views)}</p>
+                      <p className="text-xs text-slate-500">views</p>
                     </div>
                     <div>
-                      <p className="text-label text-text-muted">Likes</p>
-                      <p className="text-body text-text-secondary">{formatNumber(post.likes)}</p>
+                      <p className="text-lg font-bold text-slate-700 dark:text-slate-300">{formatNumber(post.likes)}</p>
+                      <p className="text-xs text-slate-500">likes</p>
                     </div>
                     <div>
-                      <p className="text-label text-text-muted">Comments</p>
-                      <p className="text-body text-text-secondary">{formatNumber(post.comments)}</p>
+                      <p className="text-lg font-bold text-slate-700 dark:text-slate-300">{formatNumber(post.comments)}</p>
+                      <p className="text-xs text-slate-500">comments</p>
                     </div>
                     <div>
-                      <p className="text-label text-text-muted">Shares</p>
-                      <p className="text-body text-text-secondary">{formatNumber(post.shares)}</p>
+                      <p className="text-lg font-bold text-slate-700 dark:text-slate-300">{formatNumber(post.shares)}</p>
+                      <p className="text-xs text-slate-500">shares</p>
                     </div>
                   </div>
                 </div>
               );
             })}
           </div>
-        </Card>
-
-        {/* PLATFORM DETAIL CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-          {(data.perPlatform || []).map((plat) => (
-            <PlatformCard
-              key={plat.platform}
-              platform={plat.platform.charAt(0).toUpperCase() + plat.platform.slice(1)}
-              views={formatNumber(plat.views)}
-              engagement={plat.engagementRate?.toFixed(2) || '0.00'}
-              posts={plat.posts}
-              color={PLATFORM_COLORS[plat.platform.toLowerCase()] || '#7b61ff'}
-            />
-          ))}
-        </div>
+        </section>
       </div>
     </Layout>
   );

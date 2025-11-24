@@ -8,7 +8,7 @@ import Navbar from "../components/landing/Navbar";
 
 export default function Landing() {
   return (
-    <div className="relative min-h-screen bg-brand-bg text-white">
+    <div className="relative min-h-screen bg-dark-bg-primary text-white">
       <Navbar />
       <main>
         <Hero />

@@ -1,22 +1,32 @@
 import React from 'react';
+import { PlatformIconGlow } from './PlatformIcons';
 
 /**
- * Premium Card Component System
- * Following exact design specifications for Creator Analytics Dashboard
+ * World-Class Card Component System
+ * Dual-theme support with glassmorphic effects
+ * Following Apple smoothness + Stripe polish + Linear minimalism
  */
 
-export const Card = React.forwardRef(({ className = '', children, hover = true, ...props }, ref) => {
+export const Card = React.forwardRef(({ 
+  className = '', 
+  children, 
+  hover = true, 
+  glass = false,
+  ...props 
+}, ref) => {
   return (
     <div
       ref={ref}
       className={`
-        rounded-premium
-        bg-[rgba(255,255,255,0.06)]
-        border border-[rgba(255,255,255,0.08)]
-        shadow-premium
-        backdrop-blur-sm
-        transition-all duration-[250ms] ease-out
-        ${hover ? 'hover:bg-[rgba(255,255,255,0.12)] hover:-translate-y-0.5 hover:shadow-premium-hover' : ''}
+        rounded-card
+        ${glass 
+          ? 'bg-glass-light dark:bg-glass-dark backdrop-blur-glass' 
+          : 'bg-light-card-DEFAULT dark:bg-dark-card-DEFAULT'
+        }
+        border border-light-border-soft dark:border-dark-border-soft
+        shadow-card-light dark:shadow-card-dark
+        transition-all duration-300 ease-out
+        ${hover ? 'hover:bg-light-card-hover dark:hover:bg-dark-card-hover hover:-translate-y-1 hover:shadow-card-light-hover dark:hover:shadow-card-dark-hover' : ''}
         ${className}
       `}
       {...props}
@@ -28,17 +38,20 @@ export const Card = React.forwardRef(({ className = '', children, hover = true, 
 
 Card.displayName = 'Card';
 
-export const CardHeader = ({ className = '', children, ...props }) => {
+export const CardHeader = ({ className = '', children, platform, ...props }) => {
   return (
-    <div className={`space-y-1.5 ${className}`} {...props}>
-      {children}
+    <div className={`flex items-center justify-between gap-3 ${className}`} {...props}>
+      {platform && <PlatformIconGlow platform={platform} size="sm" />}
+      <div className="flex-1">
+        {children}
+      </div>
     </div>
   );
 };
 
 export const CardTitle = ({ className = '', children, ...props }) => {
   return (
-    <h3 className={`text-card-title text-text-primary font-medium ${className}`} {...props}>
+    <h3 className={`text-card-title text-light-text-primary dark:text-dark-text-primary font-semibold ${className}`} {...props}>
       {children}
     </h3>
   );
@@ -46,7 +59,7 @@ export const CardTitle = ({ className = '', children, ...props }) => {
 
 export const CardDescription = ({ className = '', children, ...props }) => {
   return (
-    <p className={`text-label text-text-secondary ${className}`} {...props}>
+    <p className={`text-label text-light-text-secondary dark:text-dark-text-secondary mt-1 ${className}`} {...props}>
       {children}
     </p>
   );
@@ -54,7 +67,7 @@ export const CardDescription = ({ className = '', children, ...props }) => {
 
 export const CardContent = ({ className = '', children, ...props }) => {
   return (
-    <div className={`pt-0 ${className}`} {...props}>
+    <div className={`${className}`} {...props}>
       {children}
     </div>
   );
@@ -62,15 +75,15 @@ export const CardContent = ({ className = '', children, ...props }) => {
 
 export const CardFooter = ({ className = '', children, ...props }) => {
   return (
-    <div className={`flex items-center pt-4 ${className}`} {...props}>
+    <div className={`flex items-center pt-4 border-t border-light-border-soft dark:border-dark-border-soft ${className}`} {...props}>
       {children}
     </div>
   );
 };
 
 /**
- * Metric Card - Top stats row component
- * Displays large numbers with trend indicators and sparklines
+ * MetricCard - Premium stats with gradient icons and insights
+ * Desktop: 24px padding, Mobile: 16px padding
  */
 export const MetricCard = ({ 
   title, 
@@ -79,63 +92,66 @@ export const MetricCard = ({
   trend, 
   trendValue,
   sparklineData = [],
+  gradient = 'from-violet-500 to-purple-500',
+  insight,
   className = '' 
 }) => {
   const isPositive = trend === 'up' || (trendValue !== undefined && trendValue > 0);
   const displayTrend = trendValue !== undefined ? trendValue : null;
 
   return (
-    <Card className={`p-card relative overflow-hidden ${className}`}>
-      {/* Subtle sparkline background */}
-      {sparklineData.length > 0 && (
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" preserveAspectRatio="none">
-            <polyline
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              points={sparklineData.map((val, i) => 
-                `${(i / (sparklineData.length - 1)) * 100},${100 - (val / Math.max(...sparklineData)) * 80}`
-              ).join(' ')}
-              className="text-premium-blue"
-            />
-          </svg>
-        </div>
-      )}
+    <Card className={`p-card-mobile md:p-card-desktop relative overflow-hidden group ${className}`}>
+      {/* Gradient background glow */}
+      <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${gradient} opacity-10 
+                      rounded-full blur-2xl group-hover:opacity-20 transition-opacity duration-500`} />
 
-      <div className="relative">
+      <div className="relative z-10">
+        {/* Header with Gradient Icon */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <p className="text-label text-text-muted uppercase tracking-wide mb-1">{title}</p>
-            <p className="text-[28px] font-semibold text-text-primary leading-none animate-shimmer">
+            <p className="text-label text-light-text-muted dark:text-dark-text-muted uppercase tracking-wider font-medium mb-2">
+              {title}
+            </p>
+            <p className="text-metric text-light-text-primary dark:text-dark-text-primary leading-none font-bold">
               {value}
             </p>
+            {insight && (
+              <p className="text-[11px] text-light-text-secondary dark:text-dark-text-secondary mt-1.5">
+                {insight}
+              </p>
+            )}
           </div>
-          <div className="p-2.5 rounded-lg bg-gradient-to-br from-premium-purple/20 to-premium-blue/20 text-premium-purple">
+          <div className={`p-3 rounded-xl bg-gradient-to-br ${gradient} text-white 
+                          group-hover:scale-110 transition-transform duration-300
+                          shadow-lg`}>
             {icon}
           </div>
         </div>
 
+        {/* Trend Indicator */}
         {displayTrend !== null && (
-          <div className="flex items-center gap-1.5">
-            <div className={`flex items-center gap-1 text-label font-medium ${
-              isPositive ? 'text-status-success' : 'text-status-danger'
+          <div className="flex items-center gap-2 pt-3 border-t border-light-border-soft dark:border-dark-border-soft">
+            <div className={`flex items-center gap-1 text-label font-semibold ${
+              isPositive ? 'text-emerald-500' : 'text-rose-500'
             }`}>
               <svg 
-                className="w-3.5 h-3.5" 
+                className="w-4 h-4" 
                 fill="none" 
                 viewBox="0 0 24 24" 
                 stroke="currentColor"
+                strokeWidth={2.5}
               >
                 {isPositive ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
                 )}
               </svg>
               <span>{Math.abs(displayTrend).toFixed(1)}%</span>
             </div>
-            <span className="text-label text-text-muted">vs last 30 days</span>
+            <span className="text-label text-light-text-secondary dark:text-dark-text-secondary">
+              vs last period
+            </span>
           </div>
         )}
       </div>
@@ -144,41 +160,67 @@ export const MetricCard = ({
 };
 
 /**
- * Platform Card - Shows individual platform performance
+ * PlatformCard - Individual platform performance
+ * With platform icon and colored accent bar
  */
 export const PlatformCard = ({ 
   platform, 
   views, 
   engagement, 
   posts, 
-  color = '#7b61ff',
+  color = '#6C63FF',
   className = '' 
 }) => {
+  const platformColors = {
+    youtube: '#FF0000',
+    tiktok: '#2DE2E6',
+    facebook: '#1877F2',
+    instagram: '#DD2A7B',
+  };
+
+  const accentColor = platformColors[platform?.toLowerCase()] || color;
+
   return (
-    <Card className={`p-card ${className}`}>
+    <Card className={`p-card-mobile md:p-card-desktop overflow-hidden ${className}`}>
+      {/* Colored accent bar */}
       <div 
-        className="h-1 rounded-full mb-4" 
-        style={{ background: color }}
+        className="h-1 -mx-card-desktop md:-mx-card-desktop -mt-card-desktop md:-mt-card-desktop mb-4 rounded-t-card"
+        style={{ backgroundColor: accentColor }}
       />
-      <div className="space-y-3">
+      
+      <CardHeader platform={platform?.toLowerCase()}>
         <div>
-          <p className="text-label text-text-muted uppercase tracking-wide mb-1">
-            {platform}
-          </p>
-          <p className="text-[24px] font-semibold text-text-primary">
+          <CardTitle className="capitalize">{platform}</CardTitle>
+          <CardDescription>Platform Performance</CardDescription>
+        </div>
+      </CardHeader>
+      
+      <div className="mt-4 space-y-3">
+        <div>
+          <p className="text-metric text-light-text-primary dark:text-dark-text-primary font-bold">
             {views}
           </p>
-          <p className="text-label text-text-secondary">views</p>
+          <p className="text-label text-light-text-secondary dark:text-dark-text-secondary">
+            total views
+          </p>
         </div>
         
-        <div className="flex items-center gap-4 pt-2 border-t border-[rgba(255,255,255,0.05)]">
+        <div className="flex items-center gap-4 pt-3 border-t border-light-border-soft dark:border-dark-border-soft">
           <div>
-            <p className="text-label text-text-muted">Engagement</p>
-            <p className="text-body font-medium text-text-primary">{engagement}%</p>
+            <p className="text-label text-light-text-muted dark:text-dark-text-muted uppercase tracking-wide">
+              Engagement
+            </p>
+            <p className="text-body text-light-text-primary dark:text-dark-text-primary font-bold mt-1">
+              {engagement}%
+            </p>
           </div>
           <div>
-            <p className="text-label text-text-muted">Posts</p>
-            <p className="text-body font-medium text-text-primary">{posts}</p>
+            <p className="text-label text-light-text-muted dark:text-dark-text-muted uppercase tracking-wide">
+              Posts
+            </p>
+            <p className="text-body text-light-text-primary dark:text-dark-text-primary font-bold mt-1">
+              {posts}
+            </p>
           </div>
         </div>
       </div>

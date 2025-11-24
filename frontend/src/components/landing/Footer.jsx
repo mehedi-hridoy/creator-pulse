@@ -1,8 +1,8 @@
 export default function Footer() {
   return (
     <footer className="border-t border-white/5 bg-brand-bg py-12 text-gray-400">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="flex flex-col items-center justify-between gap-6 lg:flex-row">
           {/* Logo */}
           <div className="flex items-center gap-2.5">
             <div className="relative h-8 w-8 rounded-lg bg-gradient-to-br from-brand-primary via-brand-purple to-brand-pink p-[2px]">
@@ -14,7 +14,7 @@ export default function Footer() {
           </div>
           
           {/* Links */}
-          <div className="flex gap-8 text-sm">
+          <div className="flex flex-wrap justify-center gap-4 text-sm sm:gap-8">
             <a href="#features" className="transition hover:text-white">
               Features
             </a>
@@ -26,9 +26,17 @@ export default function Footer() {
             </a>
           </div>
 
-          {/* Copyright */}
-          <span className="text-sm text-gray-500">
-            © {new Date().getFullYear()} CreatorPulse. All rights reserved.
+          {/* Developer Credit */}
+          <span className="text-center text-sm text-gray-500 lg:text-left">
+            Design and Developed by{" "}
+            <a 
+              href="https://mehedihridoy.online" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-gradient-to-r from-brand-accent via-brand-primary to-brand-purple bg-clip-text font-semibold text-transparent transition-all hover:from-brand-primary hover:via-brand-purple hover:to-brand-accent"
+            >
+              Mehedi Hasan Hridoy
+            </a>
           </span>
         </div>
       </div>

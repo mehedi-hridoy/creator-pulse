@@ -269,30 +269,30 @@ export default function FeatureGrid() {
   ];
 
   return (
-    <section id="features" className="relative overflow-hidden bg-black py-32 text-white">
+    <section id="features" className="relative overflow-hidden bg-black py-20 text-white sm:py-32">
       <div className="absolute inset-0 bg-gradient-to-b from-black via-brand-bg/50 to-black" />
       
-      <div className="relative z-10 mx-auto max-w-[90rem] px-6">
+      <div className="relative z-10 mx-auto max-w-[90rem] px-4 sm:px-6">
         {/* Section Header */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }} 
           whileInView={{ opacity: 1, y: 0 }} 
           viewport={{ once: true }} 
           transition={{ duration: 0.8 }} 
-          className="mb-20 text-center"
+          className="mb-12 text-center sm:mb-20"
         >
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/70 backdrop-blur-xl">
             <span className="text-xl">#</span>
             <span>Features</span>
             <span className="text-xl">#</span>
           </div>
-          <h2 className="mx-auto max-w-4xl font-display text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
+          <h2 className="mx-auto max-w-4xl font-display text-3xl font-bold leading-tight sm:text-4xl md:text-5xl lg:text-6xl">
             Real-Time Insights. Zero Platform Chaos.
           </h2>
         </motion.div>
 
         {/* Feature Cards Grid */}
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-2">
           {features.map((feature, idx) => (
             <ScrollFloat key={feature.id} offset={30}>
               <motion.div
@@ -310,11 +310,11 @@ export default function FeatureGrid() {
 
                 <div className="relative flex h-full flex-col">
                   {/* Header */}
-                  <div className="border-b border-white/[0.08] p-8 pb-6">
-                    <h3 className="mb-2 font-display text-2xl font-semibold text-white lg:text-3xl">
+                  <div className="border-b border-white/[0.08] p-4 pb-4 sm:p-6 sm:pb-5 lg:p-8 lg:pb-6">
+                    <h3 className="mb-2 font-display text-xl font-semibold text-white sm:text-2xl lg:text-3xl">
                       {feature.title}
                     </h3>
-                    <p className="text-base leading-relaxed text-white/60">
+                    <p className="text-sm leading-relaxed text-white/60 sm:text-base">
                       {feature.desc}
                     </p>
                   </div>

@@ -197,7 +197,7 @@ export default function AIDemoSection() {
   return (
     <section
       id="demo"
-      className="relative overflow-hidden bg-gradient-to-b from-black via-brand-bg to-black py-32 text-white"
+      className="relative overflow-hidden bg-gradient-to-b from-black via-brand-bg to-black py-20 text-white sm:py-32"
     >
       {/* Animated gradient orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -205,28 +205,28 @@ export default function AIDemoSection() {
         <div className="absolute -right-40 bottom-20 h-80 w-80 rounded-full bg-brand-accent/10 blur-3xl" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[90rem] px-6">
+      <div className="relative z-10 mx-auto max-w-[90rem] px-4 sm:px-6">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-20 text-center"
+          className="mb-12 text-center sm:mb-20"
         >
-          <h2 className="mb-4 font-display text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
+          <h2 className="mb-4 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
             See what the AI{" "}
             <span className="bg-gradient-to-r from-brand-accent via-brand-primary to-brand-purple bg-clip-text text-transparent">
               actually tells you
             </span>
           </h2>
-          <p className="mx-auto max-w-3xl text-lg text-white/70 md:text-xl">
+          <p className="mx-auto max-w-3xl text-base text-white/70 sm:text-lg md:text-xl">
             Upload your analytics once and get live AI insights tailored to your audience, posting habits, and revenue goals.
           </p>
         </motion.div>
 
         {/* Feature Cards Grid */}
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-2">
           {insights.map((insight, index) => (
             <ScrollFloat key={index} offset={35}>
               <motion.div
@@ -243,11 +243,11 @@ export default function AIDemoSection() {
                 
                 <div className="relative flex h-full flex-col">
                   {/* Header */}
-                  <div className="border-b border-white/[0.08] p-6">
+                  <div className="border-b border-white/[0.08] p-4 sm:p-6">
                     <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/[0.05] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/80 backdrop-blur-xl">
                       {insight.badge}
                     </div>
-                    <h3 className="mb-2 font-display text-xl font-semibold text-white lg:text-2xl">
+                    <h3 className="mb-2 font-display text-lg font-semibold text-white sm:text-xl lg:text-2xl">
                       {insight.category}
                     </h3>
                     <p className="text-sm leading-relaxed text-white/60">
@@ -276,11 +276,11 @@ export default function AIDemoSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-20 text-center"
+          className="mt-12 text-center sm:mt-20"
         >
           <Link to="/signup">
             <motion.button
-              className="group relative inline-flex items-center gap-3 overflow-hidden rounded-[14px] bg-white px-10 py-5 font-semibold text-[1.0625rem] tracking-[-0.01em] text-black shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_1px_2px_0_rgba(0,0,0,0.05),0_16px_32px_-8px_rgba(99,102,241,0.3)] transition-all duration-300 hover:shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_2px_4px_0_rgba(0,0,0,0.05),0_24px_48px_-8px_rgba(99,102,241,0.4)]"
+              className="group relative inline-flex w-full items-center justify-center gap-3 overflow-hidden rounded-[14px] bg-white px-6 py-3.5 font-semibold text-base tracking-[-0.01em] text-black shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_1px_2px_0_rgba(0,0,0,0.05),0_16px_32px_-8px_rgba(99,102,241,0.3)] transition-all duration-300 hover:shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_2px_4px_0_rgba(0,0,0,0.05),0_24px_48px_-8px_rgba(99,102,241,0.4)] sm:w-auto sm:px-10 sm:py-5 sm:text-[1.0625rem]"
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
             >

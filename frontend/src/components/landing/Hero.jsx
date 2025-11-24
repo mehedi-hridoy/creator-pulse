@@ -83,11 +83,11 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.5 }}
-            className="mt-12 flex flex-wrap items-center justify-center gap-5"
+            className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5"
           >
-            <Link to="/signup">
+            <Link to="/signup" className="w-full sm:w-auto">
               <motion.button
-                className="group relative inline-flex items-center gap-3 overflow-hidden rounded-[14px] bg-white px-9 py-4 font-semibold text-[1.0625rem] tracking-[-0.01em] text-black shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_1px_2px_0_rgba(0,0,0,0.05),0_16px_32px_-8px_rgba(99,102,241,0.3)] transition-all duration-300 hover:shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_2px_4px_0_rgba(0,0,0,0.05),0_24px_48px_-8px_rgba(99,102,241,0.4)]"
+                className="group relative inline-flex w-full items-center justify-center gap-3 overflow-hidden rounded-[14px] bg-white px-6 py-3.5 font-semibold text-base tracking-[-0.01em] text-black shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_1px_2px_0_rgba(0,0,0,0.05),0_16px_32px_-8px_rgba(99,102,241,0.3)] transition-all duration-300 hover:shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_2px_4px_0_rgba(0,0,0,0.05),0_24px_48px_-8px_rgba(99,102,241,0.4)] sm:w-auto sm:px-9 sm:py-4 sm:text-[1.0625rem]"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -109,7 +109,7 @@ export default function Hero() {
             </Link>
             <motion.a
               href="#demo"
-              className="group inline-flex items-center gap-3 rounded-[14px] border border-white/[0.08] bg-white/[0.03] px-9 py-4 font-semibold text-[1.0625rem] tracking-[-0.01em] text-white/90 backdrop-blur-xl transition-all duration-300 hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white"
+              className="group inline-flex w-full items-center justify-center gap-3 rounded-[14px] border border-white/[0.08] bg-white/[0.03] px-6 py-3.5 font-semibold text-base tracking-[-0.01em] text-white/90 backdrop-blur-xl transition-all duration-300 hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white sm:w-auto sm:px-9 sm:py-4 sm:text-[1.0625rem]"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >

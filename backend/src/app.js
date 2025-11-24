@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import aiRoutes from "./routes/aiRoutes.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
@@ -29,6 +30,8 @@ app.get("/", (req, res) => {
 app.use("/auth", authRoutes);
 app.use("/upload", uploadRoutes);
 app.use("/analytics", analyticsRoutes);
+
+app.use("/ai", aiRoutes);
 
 // Error handling fallback
 app.use((err, req, res, next) => {

@@ -1,11 +1,17 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 
 export default function Layout({ children }) {
   const { logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
 
   const links = [
-    { path: "/", label: "Dashboard" },
+    { path: "/dashboard", label: "Dashboard" },
     { path: "/upload", label: "Upload" },
     { path: "/insights", label: "AI Insights" },
   ];
@@ -37,7 +43,7 @@ export default function Layout({ children }) {
 
         {/* LOGOUT BUTTON */}
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="mt-10 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition font-medium"
         >
           Logout

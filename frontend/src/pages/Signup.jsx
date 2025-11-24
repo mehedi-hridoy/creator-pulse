@@ -1,61 +1,68 @@
-import { useState } from "react";
-import { useAuthStore } from "../stores/authStore";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import AuthContainer from "../components/auth/AuthContainer";
 import GoogleButton from "../components/auth/GoogleButton";
-import { motion } from "framer-motion";
+import { useAuthStore } from "../stores/authStore";
 
 export default function Signup() {
-  const { signup, login } = useAuthStore();
   const navigate = useNavigate();
+  const { signup, user } = useAuthStore();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] =
-    useState("");
-  const [loading, setLoading] =
-    useState(false);
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      await signup(email, password);
-      await login(email, password);
+      await signup(username, email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError(
-        err?.response?.data?.error ||
-          "Signup failed. Please try again."
-      );
+      setError(err?.response?.data?.error || "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleGoogleSignup = () => {
+    const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+    window.location.href = `${apiBase}/auth/google`;
+  };
+
   return (
     <AuthContainer>
       <div className="grid grid-cols-1 md:grid-cols-2">
-        {/* Left Marketing / Visual Panel */}
+        {/* Left / Visual Panel */}
         <div className="relative hidden overflow-hidden md:block">
-          <div className="absolute inset-0 bg-gradient-to-tr from-brand-primary/40 via-brand-purple/40 to-brand-pink/40 opacity-40" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(236,72,153,0.4),transparent_60%)]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/40 via-brand-purple/40 to-brand-pink/40 opacity-40" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.4),transparent_60%)]" />
           <div className="flex h-full flex-col justify-between px-10 py-12">
             <div>
-              <h2 className="font-heading text-3xl font-semibold tracking-tight">Create an account</h2>
+              <h2 className="font-heading text-3xl font-semibold tracking-tight">Join the platform</h2>
               <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/80">
-                Start centralizing your analytics, surface hidden <span className="text-white">monetization signals</span>, and convert more of your audience.
+                Create an account to access unified <span className="text-white">AI analytics</span> that reveal which content drives revenue & growth.
               </p>
             </div>
             <div className="space-y-4 text-xs">
-              <Feature text="Cross-platform data ingestion" />
-              <Feature text="Smart content clustering" />
-              <Feature text="Membership & sponsor forecasting" />
-              <Feature text="Export & share insight packs" />
+              <Feature text="Multi-platform ingestion" />
+              <Feature text="Smart normalization layer" />
+              <Feature text="Predictive insight engine" />
+              <Feature text="Sponsorship performance signals" />
             </div>
           </div>
         </div>
-        {/* Right Form Panel */}
+
+        {/* Right / Form Panel */}
         <div className="relative border-l border-white/10 bg-black/60 p-8 md:p-10">
           <div className="mx-auto max-w-sm">
             <h1 className="font-heading text-2xl font-semibold">Create your account</h1>
@@ -63,9 +70,19 @@ export default function Signup() {
               Already have an account? <Link to="/login" className="text-brand-primary hover:text-white">Log in</Link>
             </p>
             <div className="mt-6 space-y-4">
-              <GoogleButton label="Sign up with Google" />
+              <GoogleButton onClick={handleGoogleSignup} label="Sign up with Google" />
               <Divider label="or continue with email" />
               <form onSubmit={onSubmit} className="space-y-4">
+                <Field label="Username">
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    minLength={3}
+                    className="auth-input"
+                  />
+                </Field>
                 <Field label="Email">
                   <input
                     type="email"
@@ -81,6 +98,7 @@ export default function Signup() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    minLength={6}
                     className="auth-input"
                   />
                 </Field>
@@ -97,7 +115,7 @@ export default function Signup() {
               </form>
             </div>
             <p className="mt-6 text-center text-xs text-white/50">
-              By creating an account you agree to our <a href="#" className="underline decoration-white/30 hover:text-white">Terms</a> & <a href="#" className="underline decoration-white/30 hover:text-white">Privacy</a>.
+              By signing up you agree to our <a href="#" className="underline decoration-white/30 hover:text-white">Terms</a> & <a href="#" className="underline decoration-white/30 hover:text-white">Privacy</a>.
             </p>
           </div>
         </div>
@@ -133,4 +151,3 @@ function Divider({ label }) {
     </div>
   );
 }
-

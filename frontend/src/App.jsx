@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { useAuthStore } from "./stores/authStore";
 
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -11,6 +13,12 @@ import Insights from "./pages/Insights";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
+  const fetchMe = useAuthStore((s) => s.fetchMe);
+
+  useEffect(() => {
+    fetchMe();
+  }, [fetchMe]);
+
   return (
     <BrowserRouter>
       <Routes>

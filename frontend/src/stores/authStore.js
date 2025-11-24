@@ -1,46 +1,44 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
 
-export const useAuthStore = create(
-  persist(
-    (set) => ({
-      user: null,
-      loading: true,
+export const useAuthStore = create((set) => ({
+  user: null,
+  loading: false,
 
-      // Called on app load / refresh
-      checkAuth: async () => {
-        try {
-          const res = await axios.get("http://localhost:5000/auth/me");
-          set({ user: res.data.userId, loading: false });
-        } catch (err) {
-          set({ user: null, loading: false });
-        }
-      },
+  setUser: (user) => set({ user }),
 
-      login: async (email, password) => {
-        await axios.post("http://localhost:5000/auth/login", {
-          email,
-          password,
-        });
-        set({ user: email }); // or res.data.userId
-      },
+  login: async (email, password) => {
+    const res = await axios.post(`${API_BASE}/auth/login`, {
+      email,
+      password,
+    });
+    set({ user: res.data.user });
+  },
 
-      signup: async (email, password) => {
-        await axios.post("http://localhost:5000/auth/register", {
-          email,
-          password,
-        });
-      },
+  signup: async (username, email, password) => {
+    const res = await axios.post(`${API_BASE}/auth/register`, {
+      username,
+      email,
+      password,
+    });
+    set({ user: res.data.user });
+  },
 
-      logout: () => {
-        set({ user: null });
-      },
-    }),
-    {
-      name: "auth-storage", // persist auth state
+  fetchMe: async () => {
+    try {
+      set({ loading: true });
+      const res = await axios.get(`${API_BASE}/auth/me`);
+      set({ user: res.data.user, loading: false });
+    } catch (err) {
+      set({ user: null, loading: false });
     }
-  )
-);
+  },
+
+  logout: async () => {
+    await axios.post(`${API_BASE}/auth/logout`).catch(() => {});
+    set({ user: null });
+  },
+}));

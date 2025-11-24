@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "../stores/authStore";
 import { useNavigate, Link } from "react-router-dom";
 import AuthContainer from "../components/auth/AuthContainer";
@@ -7,11 +7,17 @@ import { motion } from "framer-motion";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuthStore();
+  const { login, user } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -28,6 +34,11 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+    window.location.href = `${apiBase}/auth/google`;
   };
 
   return (
@@ -63,7 +74,7 @@ export default function Login() {
               Don&apos;t have an account? <Link to="/signup" className="text-brand-primary hover:text-white">Sign up</Link>
             </p>
             <div className="mt-6 space-y-4">
-              <GoogleButton label="Sign in with Google" />
+              <GoogleButton onClick={handleGoogleLogin} label="Sign in with Google" />
               <Divider label="or continue with email" />
               <form onSubmit={onSubmit} className="space-y-4">
                 <Field label="Email">

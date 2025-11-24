@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Upload from "./pages/Upload";
+import Insights from "./pages/Insights";
 
 export default function App() {
   return (
@@ -18,6 +19,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/insights"
+  element={
+    <ProtectedRoute>
+      <Insights />
+    </ProtectedRoute>
+  }
+/>
+
 
         <Route
           path="/"

@@ -1,0 +1,21 @@
+import Hero from "../components/landing/Hero";
+import FeatureGrid from "../components/landing/FeatureGrid";
+import Showcase from "../components/landing/Showcase";
+import AIDemoSection from "../components/landing/AIDemoSection";
+import Footer from "../components/landing/Footer";
+import FloatingNav from "../components/landing/FloatingNav";
+
+export default function Landing() {
+  return (
+    <div className="relative min-h-screen bg-brand-bg text-white">
+      <FloatingNav />
+      <main>
+        <Hero />
+        <FeatureGrid />
+        <Showcase />
+        <AIDemoSection />
+      </main>
+      <Footer />
+    </div>
+  );
+}

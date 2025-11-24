@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useAuthStore } from "../stores/authStore";
 import { useNavigate, Link } from "react-router-dom";
 
-export default function Login() {
+export default function Signup() {
+  const { signup, login } = useAuthStore();
   const navigate = useNavigate();
-  const { login } = useAuthStore();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [password, setPassword] =
+    useState("");
+  const [loading, setLoading] =
+    useState(false);
   const [error, setError] = useState("");
 
   const onSubmit = async (e) => {
@@ -15,12 +17,13 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
+      await signup(email, password);
       await login(email, password);
       navigate("/dashboard");
     } catch (err) {
       setError(
         err?.response?.data?.error ||
-          "Login failed. Please try again."
+          "Signup failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -29,17 +32,14 @@ export default function Login() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-brand.bg text-white">
-      <div className="pointer-events-none absolute inset-0 opacity-60">
-        {/* you can also place DarkVeil / Galaxy here if you like */}
-      </div>
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-brand.bg" />
 
       <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/10 bg-black/70 p-8 shadow-[0_24px_80px_rgba(0,0,0,0.7)] backdrop-blur-xl">
         <h1 className="font-heading text-2xl font-semibold">
-          Welcome back
+          Create your account
         </h1>
         <p className="mt-2 text-sm text-gray-300">
-          Log in to access your CreatorPulse dashboard.
+          Start tracking your creator analytics in one place.
         </p>
 
         <form
@@ -86,33 +86,19 @@ export default function Login() {
             disabled={loading}
             className="mt-2 w-full rounded-xl bg-brand.primary py-2 text-sm font-medium text-white shadow-soft-glow transition hover:bg-brand.purple disabled:opacity-60"
           >
-            {loading ? "Logging in..." : "Log in"}
+            {loading
+              ? "Creating account..."
+              : "Create account"}
           </button>
         </form>
 
-        {/* Google sign in UI only for now */}
-        <div className="mt-5 flex items-center gap-3 text-xs text-gray-500">
-          <div className="h-px flex-1 bg-white/10" />
-          <span>or continue with</span>
-          <div className="h-px flex-1 bg-white/10" />
-        </div>
-
-        <button
-          type="button"
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-gray-100 hover:border-brand.accent hover:text-white"
-          // onClick={() => TODO: Google OAuth}
-        >
-          <span className="h-4 w-4 rounded bg-white" />
-          <span>Google</span>
-        </button>
-
         <p className="mt-5 text-center text-xs text-gray-400">
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Link
-            to="/signup"
+            to="/login"
             className="text-brand.accent hover:text-white"
           >
-            Sign up
+            Log in
           </Link>
         </p>
       </div>

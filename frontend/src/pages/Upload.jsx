@@ -6,10 +6,30 @@ export default function Upload() {
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const [clearing, setClearing] = useState(false);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setError("");
+  };
+
+  const handleClearData = async () => {
+    if (!window.confirm("Are you sure you want to clear all analytics data?")) {
+      return;
+    }
+
+    setClearing(true);
+    try {
+      await axios.delete("http://localhost:5000/analytics/clear", {
+        withCredentials: true,
+      });
+      alert("All analytics data cleared successfully!");
+      setResult(null);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to clear data");
+    } finally {
+      setClearing(false);
+    }
   };
 
   const handleUpload = async () => {
@@ -85,6 +105,15 @@ export default function Upload() {
           className="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition disabled:opacity-60"
         >
           {uploading ? "Uploading..." : "Upload"}
+        </button>
+
+        {/* Clear Data Button */}
+        <button
+          onClick={handleClearData}
+          disabled={clearing}
+          className="mt-3 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md transition disabled:opacity-60"
+        >
+          {clearing ? "Clearing..." : "Clear All Analytics Data"}
         </button>
 
         {/* Result */}

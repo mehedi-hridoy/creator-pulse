@@ -175,25 +175,25 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 2.5, repeat: Infinity, repeatType: "reverse" }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2"
+            transition={{ duration: 0.8, delay: 1.8 }}
+            className="mt-16 flex flex-col items-center gap-3 text-white/40"
           >
-            <div className="flex flex-col items-center gap-3 text-white/40">
-              <span className="text-[0.6875rem] font-medium uppercase tracking-[0.15em]">Scroll</span>
-              <svg
-                className="h-5 w-5 animate-bounce"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                />
-              </svg>
-            </div>
+            <span className="text-[0.6875rem] font-medium uppercase tracking-[0.15em]">Scroll to explore</span>
+            <motion.svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              viewBox="0 0 24 24"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </motion.svg>
           </motion.div>
         </div>
       </div>

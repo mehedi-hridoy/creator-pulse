@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 import AuthContainer from "../components/auth/AuthContainer";
 import GoogleButton from "../components/auth/GoogleButton";
 import { useAuthStore } from "../stores/authStore";
 
 export default function Signup() {
   const navigate = useNavigate();
-  const { signup, user } = useAuthStore();
+  const { user } = useAuthStore();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,10 +26,25 @@ export default function Signup() {
     setError("");
     setLoading(true);
     try {
-      await signup(username, email, password);
-      navigate("/dashboard");
+      const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+      const response = await fetch(`${API_BASE}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+        credentials: "include",
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Registration failed");
+      }
+      
+      toast.success("🎉 Registration successful! Please login to continue.");
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
-      setError(err?.response?.data?.error || "Signup failed. Please try again.");
+      setError(err.message || "Registration failed. Please try again.");
+      toast.error(err.message || "Registration failed");
     } finally {
       setLoading(false);
     }

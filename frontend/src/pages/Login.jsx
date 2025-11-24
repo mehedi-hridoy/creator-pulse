@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuthStore } from "../stores/authStore";
 import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import AuthContainer from "../components/auth/AuthContainer";
 import GoogleButton from "../components/auth/GoogleButton";
 import { motion } from "framer-motion";
@@ -25,12 +26,14 @@ export default function Login() {
     setLoading(true);
     try {
       await login(email, password);
-      navigate("/dashboard");
+      toast.success("✨ Welcome back! Login successful.");
+      setTimeout(() => navigate("/dashboard"), 500);
     } catch (err) {
       setError(
         err?.response?.data?.error ||
           "Login failed. Please try again."
       );
+      toast.error(err?.response?.data?.error || "Login failed");
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./stores/authStore";
 
 import Landing from "./pages/Landing";
@@ -55,6 +56,7 @@ export default function App() {
           }
         />
       </Routes>
+      <Toaster position="top-right" />
     </BrowserRouter>
   );
 }

@@ -6,6 +6,8 @@ const analyticsSchema = new mongoose.Schema(
 
     platform: { type: String, required: true }, // youtube, instagram, facebook, etc.
 
+    postedAt: { type: Date }, // When the content was originally posted
+
     metrics: {
       totalViews: Number,
       totalLikes: Number,

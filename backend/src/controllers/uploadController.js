@@ -53,7 +53,7 @@ export const handleJsonUpload = async (req, res, next) => {
         }
 
         // 4. Normalize into database-friendly schema
-        const normalized = normalizeData(parsedData, platform, req.user.id);
+        const normalized = normalizeData(parsedData, platform, req.userId);
 
         // 5. Save to DB
         await Analytics.insertMany(normalized);
@@ -65,6 +65,8 @@ export const handleJsonUpload = async (req, res, next) => {
           items: normalized.length,
           platform
         });
+
+        console.log("Normalized:", normalized);
 
       } catch (err) {
         console.error("File error:", err);

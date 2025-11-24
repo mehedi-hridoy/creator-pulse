@@ -131,3 +131,27 @@ export const logout = (req, res) => {
   });
   res.json({ success: true });
 };
+
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { username } = req.body;
+    
+    if (!username || !username.trim()) {
+      return res.status(400).json({ success: false, error: "Username is required" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { username: username.trim() },
+      { new: true, select: "email username" }
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    res.json({ success: true, user });
+  } catch (err) {
+    next(err);
+  }
+};

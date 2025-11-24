@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useAuthStore } from "../stores/authStore";
 import { useNavigate, Link } from "react-router-dom";
+import AuthContainer from "../components/auth/AuthContainer";
+import GoogleButton from "../components/auth/GoogleButton";
+import { motion } from "framer-motion";
 
 export default function Signup() {
   const { signup, login } = useAuthStore();
@@ -31,77 +34,103 @@ export default function Signup() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-brand-bg text-white">
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-brand-bg" />
-
-      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/10 bg-black/70 p-8 shadow-[0_24px_80px_rgba(0,0,0,0.7)] backdrop-blur-xl">
-        <h1 className="font-heading text-2xl font-semibold">
-          Create your account
-        </h1>
-        <p className="mt-2 text-sm text-gray-300">
-          Start tracking your creator analytics in one place.
-        </p>
-
-        <form
-          onSubmit={onSubmit}
-          className="mt-6 space-y-4"
-        >
-          <div>
-            <label className="text-xs text-gray-400">
-              Email
-            </label>
-            <input
-              type="email"
-              className="mt-1 w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm outline-none focus:border-brand-accent"
-              value={email}
-              onChange={(e) =>
-                setEmail(e.target.value)
-              }
-              required
-            />
+    <AuthContainer>
+      <div className="grid grid-cols-1 md:grid-cols-2">
+        {/* Left Marketing / Visual Panel */}
+        <div className="relative hidden overflow-hidden md:block">
+          <div className="absolute inset-0 bg-gradient-to-tr from-brand-primary/40 via-brand-purple/40 to-brand-pink/40 opacity-40" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(236,72,153,0.4),transparent_60%)]" />
+          <div className="flex h-full flex-col justify-between px-10 py-12">
+            <div>
+              <h2 className="font-heading text-3xl font-semibold tracking-tight">Create an account</h2>
+              <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/80">
+                Start centralizing your analytics, surface hidden <span className="text-white">monetization signals</span>, and convert more of your audience.
+              </p>
+            </div>
+            <div className="space-y-4 text-xs">
+              <Feature text="Cross-platform data ingestion" />
+              <Feature text="Smart content clustering" />
+              <Feature text="Membership & sponsor forecasting" />
+              <Feature text="Export & share insight packs" />
+            </div>
           </div>
-          <div>
-            <label className="text-xs text-gray-400">
-              Password
-            </label>
-            <input
-              type="password"
-              className="mt-1 w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm outline-none focus:border-brand-accent"
-              value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
-              required
-            />
-          </div>
-
-          {error && (
-            <p className="text-xs text-red-400">
-              {error}
+        </div>
+        {/* Right Form Panel */}
+        <div className="relative border-l border-white/10 bg-black/60 p-8 md:p-10">
+          <div className="mx-auto max-w-sm">
+            <h1 className="font-heading text-2xl font-semibold">Create your account</h1>
+            <p className="mt-2 text-sm text-white/60">
+              Already have an account? <Link to="/login" className="text-brand-primary hover:text-white">Log in</Link>
             </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-2 w-full rounded-xl bg-brand-primary py-2 text-sm font-medium text-white shadow-soft-glow transition hover:bg-brand-purple disabled:opacity-60"
-          >
-            {loading
-              ? "Creating account..."
-              : "Create account"}
-          </button>
-        </form>
-
-        <p className="mt-5 text-center text-xs text-gray-400">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-brand-accent hover:text-white"
-          >
-            Log in
-          </Link>
-        </p>
+            <div className="mt-6 space-y-4">
+              <GoogleButton label="Sign up with Google" />
+              <Divider label="or continue with email" />
+              <form onSubmit={onSubmit} className="space-y-4">
+                <Field label="Email">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="auth-input"
+                  />
+                </Field>
+                <Field label="Password">
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="auth-input"
+                  />
+                </Field>
+                {error && <p className="text-xs text-red-400">{error}</p>}
+                <motion.button
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-xl bg-gradient-to-r from-brand-primary to-brand-purple px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-primary/30 transition disabled:opacity-60"
+                >
+                  {loading ? "Creating account..." : "Create account"}
+                </motion.button>
+              </form>
+            </div>
+            <p className="mt-6 text-center text-xs text-white/50">
+              By creating an account you agree to our <a href="#" className="underline decoration-white/30 hover:text-white">Terms</a> & <a href="#" className="underline decoration-white/30 hover:text-white">Privacy</a>.
+            </p>
+          </div>
+        </div>
       </div>
+    </AuthContainer>
+  );
+}
+
+function Feature({ text }) {
+  return (
+    <div className="flex items-center gap-2 text-white/80">
+      <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-white/10 text-[10px] font-bold text-white/70">✓</span>
+      <span className="text-[13px] tracking-tight">{text}</span>
     </div>
   );
 }
+
+function Field({ label, children }) {
+  return (
+    <label className="block text-xs font-medium text-white/60">
+      {label}
+      <div className="mt-1">{children}</div>
+    </label>
+  );
+}
+
+function Divider({ label }) {
+  return (
+    <div className="flex items-center gap-3 text-[11px] text-white/40">
+      <div className="h-px flex-1 bg-white/10" />
+      <span>{label}</span>
+      <div className="h-px flex-1 bg-white/10" />
+    </div>
+  );
+}
+

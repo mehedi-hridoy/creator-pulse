@@ -66,3 +66,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .auth-input {
+    @apply w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none transition focus:border-brand-primary focus:bg-black/50 placeholder:text-white/30;
+  }
+}

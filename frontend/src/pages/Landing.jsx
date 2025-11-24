@@ -1,4 +1,5 @@
 import Hero from "../components/landing/Hero";
+import SocialProof from "../components/landing/SocialProof";
 import FeatureGrid from "../components/landing/FeatureGrid";
 import Showcase from "../components/landing/Showcase";
 import AIDemoSection from "../components/landing/AIDemoSection";
@@ -11,6 +12,7 @@ export default function Landing() {
       <FloatingNav />
       <main>
         <Hero />
+        <SocialProof />
         <FeatureGrid />
         <Showcase />
         <AIDemoSection />

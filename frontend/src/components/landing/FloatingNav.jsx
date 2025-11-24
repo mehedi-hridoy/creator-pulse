@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import Logo from "../ui/Logo";
 
 export default function FloatingNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -21,47 +22,49 @@ export default function FloatingNav() {
       className="fixed top-6 left-1/2 z-50 -translate-x-1/2"
     >
       <div
-        className={`flex items-center gap-2 rounded-full border border-white/10 px-4 py-2.5 transition-all duration-300 ${
+        className={`flex items-center gap-2 rounded-full border px-6 py-3 transition-all duration-300 ${
           scrolled
-            ? "bg-black/80 shadow-2xl shadow-brand-primary/20 backdrop-blur-2xl"
-            : "bg-white/5 backdrop-blur-xl"
+            ? "border-white/[0.08] bg-black/80 shadow-2xl shadow-brand-primary/10 backdrop-blur-2xl"
+            : "border-white/[0.08] bg-white/[0.03] backdrop-blur-xl"
         }`}
       >
         {/* Logo */}
-        <div className="flex items-center gap-2 border-r border-white/10 pr-4">
-          <div className="relative h-7 w-7 rounded-lg bg-gradient-to-br from-brand-primary via-brand-purple to-brand-pink p-[1.5px]">
-            <div className="flex h-full w-full items-center justify-center rounded-[6px] bg-black">
-              <span className="text-xs font-bold bg-gradient-to-br from-brand-primary to-brand-pink bg-clip-text text-transparent">
-                CP
-              </span>
-            </div>
-          </div>
-          <span className="font-heading text-sm font-semibold text-white">
-            CreatorPulse
-          </span>
-        </div>
+        <Link to="/" className="border-r border-white/[0.08] pr-6">
+          <Logo size="sm" />
+        </Link>
 
         {/* Nav Links */}
         <div className="hidden items-center gap-1 md:flex">
           <NavLink href="#features">Features</NavLink>
-          <NavLink href="#how-it-works">How it works</NavLink>
-          <NavLink href="#demo">AI Demo</NavLink>
+          <NavLink href="#showcase">Showcase</NavLink>
+          <NavLink href="#pricing">Pricing</NavLink>
         </div>
 
         {/* Auth Buttons */}
-        <div className="flex items-center gap-2 border-l border-white/10 pl-4">
-          <Link
-            to="/login"
-            className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-300 transition hover:bg-white/10 hover:text-white"
-          >
-            Login
+        <div className="flex items-center gap-3 border-l border-white/[0.08] pl-6">
+          <Link to="/login">
+            <motion.button
+              className="text-[0.9375rem] font-medium text-white/60 transition-colors hover:text-white"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Sign in
+            </motion.button>
           </Link>
-          <Link
-            to="/signup"
-            className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-brand-primary to-brand-purple px-4 py-1.5 text-sm font-semibold text-white transition hover:shadow-lg hover:shadow-brand-primary/30"
-          >
-            <span className="relative z-10">Get started</span>
-            <div className="absolute inset-0 -z-0 bg-gradient-to-r from-brand-purple to-brand-pink opacity-0 transition-opacity group-hover:opacity-100" />
+          <Link to="/login">
+            <motion.button
+              className="group relative overflow-hidden rounded-[12px] bg-white px-5 py-2 text-[0.9375rem] font-semibold text-dark shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] transition-all hover:shadow-[0_4px_12px_0_rgba(99,102,241,0.4)]"
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="relative z-10">Get Started</span>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-brand-primary/10 to-brand-accent/10"
+                initial={{ x: '-100%' }}
+                whileHover={{ x: 0 }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.button>
           </Link>
         </div>
       </div>
@@ -71,11 +74,13 @@ export default function FloatingNav() {
 
 function NavLink({ href, children }) {
   return (
-    <a
+    <motion.a
       href={href}
-      className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-400 transition hover:bg-white/5 hover:text-white"
+      className="rounded-lg px-3 py-2 text-[0.9375rem] font-medium text-white/60 transition-colors hover:bg-white/[0.05] hover:text-white"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
       {children}
-    </a>
+    </motion.a>
   );
 }

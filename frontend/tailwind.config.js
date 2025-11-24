@@ -9,17 +9,27 @@ module.exports = {
   	extend: {
   		fontFamily: {
   			sans: [
+  				'Instrument Sans',
   				'Inter',
+  				'-apple-system',
   				'system-ui',
   				'sans-serif'
   			],
   			heading: [
-  				'Space Grotesk',
+  				'Cal Sans',
+  				'Sora',
+  				'Inter',
+  				'system-ui',
+  				'sans-serif'
+  			],
+  			display: [
+  				'Cal Sans',
   				'system-ui',
   				'sans-serif'
   			]
   		},
   		colors: {
+  			dark: '#0A0A0F',
   			brand: {
   				bg: '#0A0A0F',
   				card: '#16161F',

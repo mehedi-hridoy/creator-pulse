@@ -8,13 +8,20 @@ module.exports = {
   theme: {
   	extend: {
   		fontFamily: {
-  			sans: [
-  				'Inter',
-  				'Plus Jakarta Sans',
-  				'-apple-system',
-  				'system-ui',
-  				'sans-serif'
-  			],
+				sans: [
+					'Inter',
+					'Plus Jakarta Sans',
+					'-apple-system',
+					'system-ui',
+					'sans-serif'
+				],
+				heading: [
+					'Cal Sans',
+					'Sora',
+					'Inter',
+					'system-ui',
+					'sans-serif'
+				]
   		},
   		colors: {
 			// 🌞 LIGHT MODE (Refined Spec)

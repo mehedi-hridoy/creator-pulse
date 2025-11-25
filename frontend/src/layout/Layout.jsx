@@ -15,7 +15,6 @@ export default function Layout({ children }) {
   const links = [
     { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { path: "/upload", label: "Upload", icon: Upload },
-    { path: "/insights", label: "AI Insights", icon: Sparkles },
     { path: "/recommendations", label: "Recommendations", icon: Lightbulb },
   ];
 

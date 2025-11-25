@@ -10,7 +10,6 @@ import Signup from "./pages/Signup";
 
 import Dashboard from "./pages/Dashboard";
 import Upload from "./pages/Upload";
-import Insights from "./pages/Insights";
 import Recommendations from "./pages/Recommendations";
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -46,15 +45,6 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Upload />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/insights"
-            element={
-              <ProtectedRoute>
-                <Insights />
               </ProtectedRoute>
             }
           />

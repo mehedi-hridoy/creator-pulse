@@ -96,7 +96,8 @@ export default function Signup() {
                     onChange={(e) => setUsername(e.target.value)}
                     required
                     minLength={3}
-                    className="auth-input"
+                    placeholder="johndoe"
+                    className="w-full rounded-lg bg-white/5 border border-white/20 px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:bg-white/8 focus:border-brand-primary/60 focus:ring-2 focus:ring-brand-primary/20 focus:outline-none transition-all"
                   />
                 </Field>
                 <Field label="Email">
@@ -105,7 +106,8 @@ export default function Signup() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="auth-input"
+                    placeholder="you@example.com"
+                    className="w-full rounded-lg bg-white/5 border border-white/20 px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:bg-white/8 focus:border-brand-primary/60 focus:ring-2 focus:ring-brand-primary/20 focus:outline-none transition-all"
                   />
                 </Field>
                 <Field label="Password">
@@ -115,7 +117,8 @@ export default function Signup() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="auth-input"
+                    placeholder="••••••••"
+                    className="w-full rounded-lg bg-white/5 border border-white/20 px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:bg-white/8 focus:border-brand-primary/60 focus:ring-2 focus:ring-brand-primary/20 focus:outline-none transition-all"
                   />
                 </Field>
                 {error && <p className="text-xs text-red-400">{error}</p>}
@@ -151,9 +154,9 @@ function Feature({ text }) {
 
 function Field({ label, children }) {
   return (
-    <label className="block text-xs font-medium text-white/60">
-      {label}
-      <div className="mt-1">{children}</div>
+    <label className="block">
+      <span className="text-xs font-semibold text-white/70 mb-2 block">{label}</span>
+      {children}
     </label>
   );
 }

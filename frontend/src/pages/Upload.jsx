@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Layout from "../layout/Layout";
 import axios from "axios";
 
 export default function Upload() {
@@ -7,6 +8,7 @@ export default function Upload() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [clearing, setClearing] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -66,15 +68,40 @@ export default function Upload() {
     }
   };
 
+  // Drag & Drop handlers (presentation only)
+  const onDragOver = (e) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+  const onDragLeave = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+  const onDrop = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setFile(e.dataTransfer.files[0]);
+      setError("");
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
-      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-lg">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+    <Layout>
+      <div className="max-w-2xl mx-auto">
+        <div className="glass-card w-full p-8">
+        <h2 className="text-2xl font-semibold tracking-tight mb-2 text-foreground">
           Upload Analytics JSON
         </h2>
+        <p className="upload-meta">Enrich your dashboard data</p>
 
-        {/* File Input */}
-        <div className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+        {/* Dropzone */}
+        <div
+          className={`mt-6 dropzone-premium ${dragActive ? 'drag-active' : ''}`}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+        >
           <input
             type="file"
             accept=".json"
@@ -82,49 +109,50 @@ export default function Upload() {
             className="hidden"
             id="jsonUpload"
           />
-
-          <label htmlFor="jsonUpload" className="cursor-pointer text-gray-600 dark:text-gray-300">
+          <label htmlFor="jsonUpload" className="cursor-pointer select-none">
             {file ? (
-              <span className="font-medium">{file.name}</span>
+              <span className="font-medium text-sm text-foreground/90">{file.name}</span>
             ) : (
-              "Click to upload JSON file"
+              <>
+                <span className="text-sm font-medium text-foreground/80">Drop or click to select JSON</span>
+                <span className="block mt-2 text-xs text-muted-foreground">Single .json file • auto-processed</span>
+              </>
             )}
           </label>
         </div>
 
         {error && (
-          <p className="text-red-500 text-sm mt-3">
+          <p className="text-red-500 text-xs mt-3 font-medium">
             {error}
           </p>
         )}
 
-        {/* Button */}
-        <button
-          onClick={handleUpload}
-          disabled={uploading}
-          className="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition disabled:opacity-60"
-        >
-          {uploading ? "Uploading..." : "Upload"}
-        </button>
+        <div className="mt-6 space-y-3">
+          <button
+            onClick={handleUpload}
+            disabled={uploading}
+            className="upload-btn-primary"
+          >
+            {uploading ? "Uploading..." : file ? "Upload Selected File" : "Upload JSON"}
+          </button>
+          <button
+            onClick={handleClearData}
+            disabled={clearing}
+            className="upload-btn-danger"
+          >
+            {clearing ? "Clearing..." : "Clear All Analytics Data"}
+          </button>
+        </div>
 
-        {/* Clear Data Button */}
-        <button
-          onClick={handleClearData}
-          disabled={clearing}
-          className="mt-3 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md transition disabled:opacity-60"
-        >
-          {clearing ? "Clearing..." : "Clear All Analytics Data"}
-        </button>
-
-        {/* Result */}
         {result && (
-          <div className="mt-6 p-4 rounded-lg bg-green-100 dark:bg-green-800 text-gray-900 dark:text-white">
-            <h3 className="font-semibold">Upload Successful</h3>
-            <p className="text-sm mt-1">Platform: <b>{result.platform}</b></p>
-            <p className="text-sm">Items Extracted: <b>{result.count}</b></p>
+          <div className="upload-result-card">
+            <h3 className="font-semibold text-sm tracking-wide">Upload Successful</h3>
+            <p className="text-xs mt-2">Platform: <b>{result.platform}</b></p>
+            <p className="text-xs">Items Extracted: <b>{result.count}</b></p>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }

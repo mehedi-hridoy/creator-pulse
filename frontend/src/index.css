@@ -188,4 +188,40 @@
   .mini-toggle button:not(.active):hover {
     @apply text-foreground bg-muted/50;
   }
+
+  /* Upload redesign utilities */
+  .upload-wrapper-bg {
+    background:
+      radial-gradient(circle at 30% 40%, rgba(103,90,255,0.18), transparent 60%),
+      radial-gradient(circle at 70% 55%, rgba(139,92,246,0.14), transparent 65%),
+      hsl(var(--background));
+  }
+  .dropzone-premium {
+    @apply relative flex flex-col items-center justify-center rounded-[18px] border border-dashed border-border/60 transition text-center px-6 py-8 cursor-pointer;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .dropzone-premium.drag-active {
+    border-color: rgba(103,90,255,0.65);
+    box-shadow: 0 0 0 2px rgba(103,90,255,0.35), 0 8px 24px -6px rgba(103,90,255,0.45);
+  }
+  .upload-btn-primary {
+    @apply w-full rounded-full font-semibold text-sm tracking-wide transition relative overflow-hidden py-3;
+    background: linear-gradient(90deg,#675AFF,#7B6AFD,#8B5CF6);
+    color:#fff;
+    box-shadow: 0 6px 18px -4px rgba(103,90,255,0.55);
+  }
+  .upload-btn-primary:hover { filter: brightness(1.08); }
+  .upload-btn-primary:disabled { filter: grayscale(0.3); opacity:0.5; }
+  .upload-btn-danger {
+    @apply w-full rounded-full font-semibold text-sm tracking-wide transition relative overflow-hidden py-3;
+    background: linear-gradient(90deg,#FF5A5F,#FF4247,#FF2A30);
+    color:#fff;
+    box-shadow: 0 6px 20px -4px rgba(255,90,95,0.55);
+  }
+  .upload-btn-danger:hover { filter: brightness(1.07); }
+  .upload-btn-danger:disabled { filter: grayscale(0.2); opacity:0.55; }
+  .upload-meta { @apply text-[11px] uppercase tracking-wider font-semibold text-muted-foreground/70 mt-1; }
+  .upload-result-card { @apply rounded-[16px] p-4 mt-6; background: linear-gradient(135deg, rgba(103,90,255,0.12), rgba(139,92,246,0.12)); border:1px solid rgba(103,90,255,0.35); }
 }

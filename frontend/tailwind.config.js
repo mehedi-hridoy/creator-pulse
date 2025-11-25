@@ -4,7 +4,7 @@ module.exports = {
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
-  darkMode: ["class", "class"],
+  darkMode: "class",
   theme: {
   	extend: {
   		fontFamily: {
@@ -17,46 +17,53 @@ module.exports = {
   			],
   		},
   		colors: {
-  			// Premium Design System Colors
-  			navy: {
-  				deep: '#0c0f17',
-  			},
-  			premium: {
-  				purple: '#7b61ff',
-  				blue: '#3cbaff',
-  			},
-  			surface: {
-  				card: 'rgba(255, 255, 255, 0.06)',
-  				border: 'rgba(255, 255, 255, 0.08)',
-  				hover: 'rgba(255, 255, 255, 0.12)',
-  			},
-  			text: {
-  				primary: '#ffffff',
-  				secondary: 'rgba(255, 255, 255, 0.6)',
-  				muted: 'rgba(255, 255, 255, 0.4)',
-  			},
-  			status: {
-  				success: '#3bd67f',
-  				danger: '#ff4d4f',
-  				warning: '#f7c843',
-  			},
-  			// Platform Colors
-  			platform: {
-  				youtube: '#ff4d4f',
-  				tiktok: '#3cbaff',
-  				facebook: '#7b61ff',
-  				instagram: '#E1306C',
-  			},
-  			// Legacy support
-  			dark: '#0A0A0F',
-  			brand: {
-  				bg: '#0A0A0F',
-  				card: '#16161F',
-  				primary: '#7b61ff',
-  				accent: '#3cbaff',
-  				purple: '#7b61ff',
-  				pink: '#EC4899'
-  			},
+			// 🌞 LIGHT MODE (Refined Spec)
+			light: {
+				bg: '#F8FAFC',          // Updated light background
+				surface: '#FFFFFF',
+				elevated: '#FFFFFF',
+				border: '#E1E5EA',      // Refined border neutral
+				text: {
+					primary: '#1A1A1A',
+					secondary: '#555555',
+					tertiary: '#7C7F85',
+				},
+			},
+			// 🌙 DARK MODE (Deep Neutrals + Subtle Elevation)
+			dark: {
+				bg: '#0F1115',          // Deeper background spec
+				surface: '#13161C',     // Card surface
+				elevated: '#1A1D24',    // Elevated layer
+				sidebar: '#1A1D24',
+				border: 'rgba(255, 255, 255, 0.08)',
+				text: {
+					primary: '#F5F6F7',
+					secondary: '#A5AABB',
+					tertiary: '#6B7280',
+				},
+			},
+			// 🎨 ACCENTS (Primary + Glow)
+			brand: {
+				primary: '#675AFF',    // Primary accent
+				glow: '#8B5CF6',        // Glow / secondary accent
+				blue: '#0EA5E9',        // Info / cyan
+				pink: '#EC4899',
+			},
+			// ✅ STATUS (Exact Spec)
+			status: {
+				success: '#16C47F',
+				warning: '#F59E0B',
+				danger: '#FF5A5F',
+				info: '#0EA5E9',
+			},
+  			// 📱 PLATFORM COLORS (official brand colors)
+			platform: {
+				youtube: '#FF0000',
+				instagram: '#E1306C', // Base pink (gradient handled in CSS)
+				tiktokCyan: '#00F2EA',
+				tiktokMagenta: '#FF0050',
+				facebook: '#1877F2',
+			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -99,41 +106,65 @@ module.exports = {
   			}
   		},
   		fontSize: {
-  			// Premium Typography Scale
-  			'page-title': ['28px', { lineHeight: '1.2', fontWeight: '600' }],
-  			'section-title': ['20px', { lineHeight: '1.3', fontWeight: '500' }],
-  			'card-title': ['16px', { lineHeight: '1.4', fontWeight: '500' }],
+  			'display': ['48px', { lineHeight: '1.1', fontWeight: '700' }],
+  			'h1': ['36px', { lineHeight: '1.2', fontWeight: '700' }],
+  			'h2': ['28px', { lineHeight: '1.3', fontWeight: '600' }],
+  			'h3': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
+  			'h4': ['20px', { lineHeight: '1.4', fontWeight: '600' }],
+  			'body-lg': ['16px', { lineHeight: '1.5', fontWeight: '400' }],
   			'body': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
-  			'label': ['12px', { lineHeight: '1.4', fontWeight: '400' }],
+  			'body-sm': ['13px', { lineHeight: '1.5', fontWeight: '400' }],
+  			'caption': ['12px', { lineHeight: '1.4', fontWeight: '500' }],
   		},
-  		spacing: {
-  			'section': '32px',
-  			'card': '24px',
-  		},
-  		boxShadow: {
-  			'premium': '0 4px 20px rgba(0, 0, 0, 0.35)',
-  			'premium-hover': '0 8px 30px rgba(0, 0, 0, 0.45)',
-  			'soft-glow': '0 0 40px rgba(123, 97, 255, 0.4)',
-  			'purple-glow': '0 0 20px rgba(123, 97, 255, 0.3)',
+			boxShadow: {
+				// Light Mode (Base + Hover)
+				'card-light': '0 4px 14px rgba(0,0,0,0.08)',
+				'card-light-hover': '0 6px 20px rgba(0,0,0,0.12)',
+				// Dark Mode (Base)
+				'card-dark': '0 6px 18px rgba(0,0,0,0.38)',
+				// Legacy glass (optional retain)
+				'glass-sm': '0 2px 12px rgba(0, 0, 0, 0.04)',
+				'glass': '0 4px 24px rgba(0, 0, 0, 0.06)',
+				'glass-lg': '0 8px 32px rgba(0, 0, 0, 0.08)',
+				// Glow effects updated to new accent
+				'glow-primary': '0 0 20px rgba(103,90,255,0.35)',
+				'glow-glow': '0 0 28px rgba(139,92,246,0.40)',
+			},
+  		backdropBlur: {
+  			'glass': '12px',
+  			'glass-lg': '24px',
   		},
   		borderRadius: {
-  			'premium': '14px',
+  			'glass': '16px',
+  			'glass-lg': '24px',
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		backgroundImage: {
-  			'sidebar-gradient': 'linear-gradient(to bottom, #090b12, #0f1220)',
-  			'purple-blue-gradient': 'linear-gradient(135deg, #7b61ff, #3cbaff)',
+  			'gradient-brand': 'linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%)',
+  			'gradient-success': 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+  			'gradient-glass-light': 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)',
+  			'gradient-glass-dark': 'linear-gradient(135deg, rgba(26, 27, 36, 0.8) 0%, rgba(18, 19, 26, 0.9) 100%)',
   		},
   		animation: {
-  			'shimmer': 'shimmer 2s ease-in-out infinite',
+  			'fade-in': 'fadeIn 0.5s ease-out',
+  			'slide-up': 'slideUp 0.4s ease-out',
+  			'scale-in': 'scaleIn 0.3s ease-out',
   		},
   		keyframes: {
-  			shimmer: {
-  				'0%, 100%': { opacity: '1' },
-  				'50%': { opacity: '0.7' },
-  			}
+  			fadeIn: {
+  				'0%': { opacity: '0' },
+  				'100%': { opacity: '1' },
+  			},
+  			slideUp: {
+  				'0%': { transform: 'translateY(20px)', opacity: '0' },
+  				'100%': { transform: 'translateY(0)', opacity: '1' },
+  			},
+  			scaleIn: {
+  				'0%': { transform: 'scale(0.95)', opacity: '0' },
+  				'100%': { transform: 'scale(1)', opacity: '1' },
+  			},
   		}
   	}
   },

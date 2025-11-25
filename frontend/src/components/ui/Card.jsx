@@ -1,22 +1,38 @@
 import React from 'react';
+import { TrendUp, TrendDown } from '@phosphor-icons/react';
+import { PlatformLogo } from './PlatformLogos';
 
 /**
- * Premium Card Component System
- * Following exact design specifications for Creator Analytics Dashboard
+ * \ud83c\udf1f WORLD-CLASS Card Component System
+ * Premium design matching Linear, Stripe, and Notion
+ * Features: Glassmorphism, 18px radius, professional shadows
  */
 
-export const Card = React.forwardRef(({ className = '', children, hover = true, ...props }, ref) => {
+export const Card = React.forwardRef(({ 
+  className = '', 
+  children, 
+  hover = true,
+  variant = 'default',
+  accentBar = null, // 'youtube' | 'instagram' | 'tiktok' | 'facebook'
+  ...props 
+}, ref) => {
+  const variants = {
+    default: 'glass-card shadow-card-light dark:shadow-card-dark',
+    elevated: 'glass-card-lg shadow-card-light dark:shadow-card-dark',
+    bordered: 'glass-card border-2 shadow-card-light dark:shadow-card-dark',
+  };
+
+  const accentBarClass = accentBar ? `accent-bar-${accentBar}` : '';
+
   return (
     <div
       ref={ref}
       className={`
-        rounded-premium
-        bg-[rgba(255,255,255,0.06)]
-        border border-[rgba(255,255,255,0.08)]
-        shadow-premium
-        backdrop-blur-sm
-        transition-all duration-[250ms] ease-out
-        ${hover ? 'hover:bg-[rgba(255,255,255,0.12)] hover:-translate-y-0.5 hover:shadow-premium-hover' : ''}
+        rounded-[18px]
+        ${variants[variant]}
+        ${accentBarClass}
+        transition-all duration-300 ease-out
+        ${hover ? 'hover:scale-[1.01] hover:shadow-card-light-hover dark:hover:shadow-card-dark' : ''}
         ${className}
       `}
       {...props}
@@ -30,7 +46,7 @@ Card.displayName = 'Card';
 
 export const CardHeader = ({ className = '', children, ...props }) => {
   return (
-    <div className={`space-y-1.5 ${className}`} {...props}>
+    <div className={`space-y-1.5 p-6 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -38,7 +54,7 @@ export const CardHeader = ({ className = '', children, ...props }) => {
 
 export const CardTitle = ({ className = '', children, ...props }) => {
   return (
-    <h3 className={`text-card-title text-text-primary font-medium ${className}`} {...props}>
+    <h3 className={`text-h4 font-semibold text-foreground ${className}`} {...props}>
       {children}
     </h3>
   );
@@ -46,7 +62,7 @@ export const CardTitle = ({ className = '', children, ...props }) => {
 
 export const CardDescription = ({ className = '', children, ...props }) => {
   return (
-    <p className={`text-label text-text-secondary ${className}`} {...props}>
+    <p className={`text-body-sm text-muted-foreground ${className}`} {...props}>
       {children}
     </p>
   );
@@ -54,7 +70,7 @@ export const CardDescription = ({ className = '', children, ...props }) => {
 
 export const CardContent = ({ className = '', children, ...props }) => {
   return (
-    <div className={`pt-0 ${className}`} {...props}>
+    <div className={`p-6 pt-0 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -62,80 +78,77 @@ export const CardContent = ({ className = '', children, ...props }) => {
 
 export const CardFooter = ({ className = '', children, ...props }) => {
   return (
-    <div className={`flex items-center pt-4 ${className}`} {...props}>
+    <div className={`flex items-center p-6 pt-0 ${className}`} {...props}>
       {children}
     </div>
   );
 };
 
 /**
- * Metric Card - Top stats row component
- * Displays large numbers with trend indicators and sparklines
+ * \ud83d\udcca MetricCard - Premium stat display with trend indicators
+ * World-class design with smooth animations and elegant shadows
  */
 export const MetricCard = ({ 
   title, 
   value, 
   icon, 
-  trend, 
   trendValue,
-  sparklineData = [],
-  className = '' 
+  trendLabel = 'vs last period',
+  className = '',
+  gradient = false,
 }) => {
-  const isPositive = trend === 'up' || (trendValue !== undefined && trendValue > 0);
-  const displayTrend = trendValue !== undefined ? trendValue : null;
+  const isPositive = trendValue !== undefined && trendValue > 0;
+  const hasNegativeTrend = trendValue !== undefined && trendValue < 0;
 
   return (
-    <Card className={`p-card relative overflow-hidden ${className}`}>
-      {/* Subtle sparkline background */}
-      {sparklineData.length > 0 && (
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" preserveAspectRatio="none">
-            <polyline
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              points={sparklineData.map((val, i) => 
-                `${(i / (sparklineData.length - 1)) * 100},${100 - (val / Math.max(...sparklineData)) * 80}`
-              ).join(' ')}
-              className="text-premium-blue"
-            />
-          </svg>
-        </div>
+    <Card className={`p-6 relative overflow-hidden ${className}`} hover={true}>
+      {/* Subtle gradient overlay for premium feel */}
+        {gradient && (
+        <div className="absolute inset-0 bg-gradient-to-br from-[#675AFF]/6 via-[#8B5CF6]/6 to-[#675AFF]/4" />
       )}
 
-      <div className="relative">
-        <div className="flex items-start justify-between mb-4">
+      <div className="relative space-y-3">
+        {/* Header with icon */}
+        <div className="flex items-start justify-between">
           <div className="flex-1">
-            <p className="text-label text-text-muted uppercase tracking-wide mb-1">{title}</p>
-            <p className="text-[28px] font-semibold text-text-primary leading-none animate-shimmer">
-              {value}
+            <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-widest">
+              {title}
             </p>
           </div>
-          <div className="p-2.5 rounded-lg bg-gradient-to-br from-premium-purple/20 to-premium-blue/20 text-premium-purple">
-            {icon}
-          </div>
+          {icon && (
+            <div className="flex items-center justify-center w-11 h-11 rounded-[14px] bg-gradient-to-br from-[#675AFF] to-[#8B5CF6] text-white shadow-glow-primary">
+              {icon}
+            </div>
+          )}
         </div>
 
-        {displayTrend !== null && (
-          <div className="flex items-center gap-1.5">
-            <div className={`flex items-center gap-1 text-label font-medium ${
-              isPositive ? 'text-status-success' : 'text-status-danger'
-            }`}>
-              <svg 
-                className="w-3.5 h-3.5" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
-                {isPositive ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                )}
-              </svg>
-              <span>{Math.abs(displayTrend).toFixed(1)}%</span>
+        {/* Value with professional typography */}
+        <div>
+          <p className="text-[32px] font-bold text-foreground tracking-tight leading-none">
+            {value}
+          </p>
+        </div>
+
+        {/* Trend indicator with badges */}
+        {trendValue !== undefined && (
+          <div className="flex items-center gap-2 pt-1">
+            <div className={`
+              flex items-center gap-1.5 px-2.5 py-1.5 rounded-[10px] text-[11px] font-semibold
+              ${isPositive 
+                ? 'bg-[#16C47F]/12 text-[#16C47F] dark:bg-[#16C47F]/20' 
+                : hasNegativeTrend
+                ? 'bg-[#FF5A5F]/12 text-[#FF5A5F] dark:bg-[#FF5A5F]/22'
+                : 'bg-muted text-muted-foreground'
+              }
+            `}>
+              {isPositive ? (
+                <TrendUp size={14} weight="bold" />
+              ) : hasNegativeTrend ? (
+                <TrendDown size={14} weight="bold" />
+              ) : null}
+              <span>{isPositive ? '+' : ''}{Math.abs(trendValue).toFixed(1)}%</span>
             </div>
-            <span className="text-label text-text-muted">vs last 30 days</span>
+            <span className="text-[11px] text-muted-foreground font-medium">{trendLabel}</span>
           </div>
         )}
       </div>
@@ -144,41 +157,68 @@ export const MetricCard = ({
 };
 
 /**
- * Platform Card - Shows individual platform performance
+ * \ud83d\udcf1 PlatformCard - Platform-specific metrics with brand colors
+ * Features: Platform accent bar, official logos, premium hover effects
  */
 export const PlatformCard = ({ 
   platform, 
   views, 
   engagement, 
   posts, 
-  color = '#7b61ff',
   className = '' 
 }) => {
+  const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
+  const platformKey = platform.toLowerCase();
+
   return (
-    <Card className={`p-card ${className}`}>
-      <div 
-        className="h-1 rounded-full mb-4" 
-        style={{ background: color }}
-      />
-      <div className="space-y-3">
+    <Card 
+      className={`p-6 ${className}`} 
+      hover={true}
+      accentBar={platformKey}
+    >
+      <div className="space-y-4">
+        {/* Platform header with official logo */}
+        <div className="flex items-center justify-between">
+          <PlatformLogo platform={platform} className="w-9 h-9" showBg={true} />
+        </div>
+
+        {/* Platform name */}
         <div>
-          <p className="text-label text-text-muted uppercase tracking-wide mb-1">
-            {platform}
+          <h3 className="text-[18px] font-bold text-foreground">
+            {platformName}
+          </h3>
+          <p className="text-[13px] text-muted-foreground mt-0.5">
+            Platform Performance
           </p>
-          <p className="text-[24px] font-semibold text-text-primary">
+        </div>
+
+        {/* Main metric - Total Views */}
+        <div>
+          <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-widest mb-1.5">
+            Total Views
+          </p>
+          <p className="text-[28px] font-bold text-foreground leading-none">
             {views}
           </p>
-          <p className="text-label text-text-secondary">views</p>
         </div>
-        
-        <div className="flex items-center gap-4 pt-2 border-t border-[rgba(255,255,255,0.05)]">
+
+        {/* Secondary metrics grid */}
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50">
           <div>
-            <p className="text-label text-text-muted">Engagement</p>
-            <p className="text-body font-medium text-text-primary">{engagement}%</p>
+            <p className="text-[11px] text-muted-foreground font-medium mb-1.5">
+              Engagement
+            </p>
+            <p className="text-[16px] font-bold text-foreground">
+              {engagement}%
+            </p>
           </div>
           <div>
-            <p className="text-label text-text-muted">Posts</p>
-            <p className="text-body font-medium text-text-primary">{posts}</p>
+            <p className="text-[11px] text-muted-foreground font-medium mb-1.5">
+              Posts
+            </p>
+            <p className="text-[16px] font-bold text-foreground">
+              {posts}
+            </p>
           </div>
         </div>
       </div>

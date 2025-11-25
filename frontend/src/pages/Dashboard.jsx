@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import axios from "axios";
 import {
   AreaChart,
@@ -14,46 +15,50 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  LineChart,
+  Line,
 } from "recharts";
-import { 
-  Eye, 
-  ThumbsUp, 
-  MessageCircle, 
-  TrendingUp, 
-  FileText,
-  Users,
-  Activity
-} from "lucide-react";
+import {
+  Eye,
+  Heart,
+  ChatCircleDots,
+  Pulse,
+  Sparkle
+} from "@phosphor-icons/react";
 import Layout from "../layout/Layout";
-import UserProfile from "../components/dashboard/UserProfile";
+// Replacing boxed UserProfile with minimal inline pill
+import { useAuthStore } from "../stores/authStore";
 import { Card, MetricCard, PlatformCard } from "../components/ui/Card";
+import { PlatformLogo } from "../components/ui/PlatformLogos";
 
 axios.defaults.withCredentials = true;
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
 
-// Platform color mapping (exact spec colors)
+// \ud83c\udfa8 OFFICIAL PLATFORM COLORS (exact brand specifications)
 const PLATFORM_COLORS = {
-  youtube: '#ff4d4f',
-  tiktok: '#3cbaff',
-  facebook: '#7b61ff',
+  youtube: '#FF0000',
   instagram: '#E1306C',
+  tiktok: '#69C9D0',      // Cyan for consistency
+  facebook: '#1877F2',
 };
 
-// Premium tooltip styling
+// \ud83c\udf08 Premium gradient for area chart
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload || !payload.length) return null;
   
   return (
-    <div className="bg-[rgba(15,18,32,0.95)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-lg p-3 shadow-premium">
-      <p className="text-label text-text-muted mb-2">{label}</p>
+    <div className="glass-card rounded-[14px] p-3.5 min-w-[150px] shadow-glass-lg">
+      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">{label}</p>
       {payload.map((entry, index) => (
-        <div key={index} className="flex items-center gap-2">
-          <div 
-            className="w-2 h-2 rounded-full" 
-            style={{ backgroundColor: entry.color }}
-          />
-          <span className="text-body text-text-secondary">{entry.name}:</span>
-          <span className="text-body text-text-primary font-medium">
+        <div key={index} className="flex items-center justify-between gap-3 mb-1 last:mb-0">
+          <div className="flex items-center gap-2">
+            <div 
+              className="w-2.5 h-2.5 rounded-full" 
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-[13px] text-foreground font-medium">{entry.name}:</span>
+          </div>
+          <span className="text-[13px] font-bold text-foreground">
             {typeof entry.value === 'number' ? formatNumber(entry.value) : entry.value}
           </span>
         </div>
@@ -69,6 +74,7 @@ const formatNumber = (num) => {
 };
 
 export default function Dashboard() {
+  const { user } = useAuthStore();
   const { data, isLoading, error } = useQuery({
     queryKey: ["overview"],
     queryFn: async () => {
@@ -82,8 +88,8 @@ export default function Dashboard() {
       <Layout>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-[rgba(255,255,255,0.1)] border-t-premium-purple rounded-full animate-spin" />
-            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-premium-blue rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1s' }} />
+            <div className="w-20 h-20 border-4 border-muted border-t-[#675AFF] dark:border-t-[#675AFF] rounded-full animate-spin" />
+            <Sparkle size={28} weight="duotone" className="absolute inset-0 m-auto text-[#675AFF] animate-pulse" />
           </div>
         </div>
       </Layout>
@@ -94,19 +100,21 @@ export default function Dashboard() {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Card className="p-8 text-center max-w-md" hover={false}>
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-premium-purple/20 to-premium-blue/20 flex items-center justify-center">
-              <FileText className="h-8 w-8 text-premium-purple" />
+          <Card className="p-10 text-center max-w-md">
+            <div className="w-20 h-20 mx-auto mb-5 rounded-[18px] bg-gradient-to-br from-[#675AFF] to-[#8B5CF6] flex items-center justify-center shadow-glow-primary">
+              <Sparkle size={46} weight="duotone" className="text-white" />
             </div>
-            <h3 className="text-section-title text-text-primary mb-2">No Analytics Data Yet</h3>
-            <p className="text-body text-text-secondary">Upload your platform JSON files to see insights here.</p>
+            <h3 className="text-[24px] font-bold text-foreground mb-2">No Data Yet</h3>
+            <p className="text-[14px] text-muted-foreground">
+              Upload your platform analytics to see your performance insights
+            </p>
           </Card>
         </div>
       </Layout>
     );
   }
 
-  // Format monthly trend for line chart
+  // Format monthly trend for area chart
   const monthlyData = Object.entries(data.monthlyTrend || {})
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([month, views]) => ({
@@ -114,14 +122,14 @@ export default function Dashboard() {
       Views: views,
     }));
 
-  // Format platform data for donut chart
+  // Format platform data for pie chart
   const platformDonutData = (data.perPlatform || []).map((p) => ({
     name: p.platform.charAt(0).toUpperCase() + p.platform.slice(1),
     value: p.views,
-    color: PLATFORM_COLORS[p.platform.toLowerCase()] || '#7b61ff',
+    color: PLATFORM_COLORS[p.platform.toLowerCase()] || '#8B5CF6',
   }));
 
-  // Format platform bars for engagement
+  // Format platform data for bar chart
   const platformBars = (data.perPlatform || []).map((p) => ({
     platform: p.platform.charAt(0).toUpperCase() + p.platform.slice(1),
     Views: p.views,
@@ -129,228 +137,268 @@ export default function Dashboard() {
     Comments: p.comments,
   }));
 
-  // Generate simple sparkline data for metrics (last 7 days simulation)
-  const generateSparkline = (baseValue) => {
-    return Array.from({ length: 7 }, () => baseValue * (0.7 + Math.random() * 0.6));
-  };
-
   return (
     <Layout>
-      <div className="space-y-8">
-        {/* HEADER WITH USER PROFILE */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 animate-in fade-in duration-300">
-          <div>
-            <h1 className="text-page-title md:text-[32px] text-text-primary mb-2">
-              Dashboard Overview
+      <div className="space-y-8 animate-fade-in">
+        {/* \ud83d\udcc8 HEADER SECTION - Clean & Bold */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="animate-slide-up">
+            <h1 className="text-[36px] lg:text-[42px] font-bold text-foreground mb-2 tracking-tight">
+              Analytics Dashboard
             </h1>
-            <p className="text-body text-text-secondary">
+            <p className="text-[15px] text-muted-foreground">
               Track your content performance across all platforms
             </p>
           </div>
-          <div className="lg:w-80 shrink-0">
-            <UserProfile />
-          </div>
+          {user && (
+            <div className="animate-fade-in">
+              <div className="profile-pill">
+                <div className="avatar-gradient">
+                  <span>{(user.username || 'User').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[14px] font-semibold leading-none text-foreground">
+                    {user.username}
+                  </span>
+                  {/* subtle status/glow dot removed for ultra minimal; can add back if desired */}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* TOP STATS ROW - 4 Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        {/* \ud83d\udcca KEY METRICS ROW - Premium stat cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <MetricCard
             title="Total Views"
             value={formatNumber(data.totalViews)}
-            icon={<Eye className="w-5 h-5" />}
+            icon={<Eye size={22} weight="duotone" />}
             trendValue={data.growth?.viewsGrowth}
-            sparklineData={generateSparkline(data.totalViews)}
+            gradient={true}
           />
           <MetricCard
             title="Total Likes"
             value={formatNumber(data.totalLikes)}
-            icon={<ThumbsUp className="w-5 h-5" />}
-            sparklineData={generateSparkline(data.totalLikes)}
+            icon={<Heart size={22} weight="duotone" />}
+            trendValue={data.growth?.likesGrowth}
           />
           <MetricCard
             title="Total Comments"
             value={formatNumber(data.totalComments)}
-            icon={<MessageCircle className="w-5 h-5" />}
-            sparklineData={generateSparkline(data.totalComments)}
+            icon={<ChatCircleDots size={22} weight="duotone" />}
+            trendValue={data.growth?.commentsGrowth}
           />
           <MetricCard
             title="Engagement Rate"
             value={`${data.engagementRate?.toFixed(2) || 0}%`}
-            icon={<Activity className="w-5 h-5" />}
+            icon={<Pulse size={22} weight="duotone" />}
             trendValue={data.growth?.engagementGrowth}
-            sparklineData={generateSparkline(data.engagementRate || 0)}
           />
         </div>
 
-        {/* MONTHLY VIEWS TREND - Large Horizontal Card */}
-        <Card className="p-6 md:p-card" hover={false}>
-          <div className="mb-6">
-            <h3 className="text-section-title text-text-primary mb-1">Monthly Views Trend</h3>
-            <p className="text-body text-text-secondary">Content performance over time</p>
-          </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <AreaChart data={monthlyData}>
-              <defs>
-                <linearGradient id="viewsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3cbaff" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#7b61ff" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid 
-                strokeDasharray="3 3" 
-                stroke="rgba(255,255,255,0.05)" 
-                vertical={false}
-              />
-              <XAxis 
-                dataKey="month" 
-                stroke="rgba(255,255,255,0.4)" 
-                style={{ fontSize: '12px' }}
-                tick={{ fill: 'rgba(255,255,255,0.6)' }}
-              />
-              <YAxis 
-                stroke="rgba(255,255,255,0.4)" 
-                style={{ fontSize: '12px' }}
-                tick={{ fill: 'rgba(255,255,255,0.6)' }}
-                tickFormatter={formatNumber}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Area
-                type="monotone"
-                dataKey="Views"
-                stroke="#3cbaff"
-                strokeWidth={2}
-                fill="url(#viewsGradient)"
-                animationDuration={300}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </Card>
+        {/* 📉 PERFORMANCE MULTI-CHART - Toggle between 3 views */}
+        <PerformanceCharts
+          monthlyData={monthlyData}
+          platformBars={platformBars}
+          perPlatformRaw={data.perPlatform || []}
+          totalViews={data.totalViews || 0}
+        />
 
-        {/* CHARTS ROW - Platform Distribution & Performance */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* PLATFORM DISTRIBUTION - Donut Chart */}
-          <Card className="p-6 md:p-card" hover={false}>
-            <div className="mb-6">
-              <h3 className="text-section-title text-text-primary mb-1">Platform Distribution</h3>
-              <p className="text-body text-text-secondary">Views by platform</p>
+        {/* \ud83c\udf88 CHARTS ROW - Platform distribution & engagement */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-slide-up" style={{ animationDelay: '0.3s' }}>
+          {/* Platform Distribution Pie Chart */}
+          <Card className="p-7" hover={false}>
+            <div className="mb-7">
+              <h3 className="text-[22px] font-bold text-foreground mb-1">Platform Distribution</h3>
+              <p className="text-[13px] text-muted-foreground">Views breakdown by platform</p>
             </div>
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={300}>
               <PieChart>
+                <defs>
+                  {/* Instagram multi gradient */}
+                  <linearGradient id="instagramGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#F77737" />
+                    <stop offset="40%" stopColor="#E1306C" />
+                    <stop offset="100%" stopColor="#C13584" />
+                  </linearGradient>
+                  {/* TikTok dual accent */}
+                  <linearGradient id="tiktokGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#00F2EA" />
+                    <stop offset="100%" stopColor="#FF0050" />
+                  </linearGradient>
+                  {/* YouTube depth */}
+                  <linearGradient id="youtubeGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#FF4D4D" />
+                    <stop offset="100%" stopColor="#FF0000" />
+                  </linearGradient>
+                  {/* Facebook refined */}
+                  <linearGradient id="facebookGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3B82F6" />
+                    <stop offset="100%" stopColor="#1877F2" />
+                  </linearGradient>
+                </defs>
                 <Pie
                   data={platformDonutData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={3}
+                  innerRadius={78}
+                  outerRadius={118}
+                  cornerRadius={6}
+                  paddingAngle={2}
                   dataKey="value"
-                  animationDuration={300}
+                  stroke="#1A1D24"
+                  strokeWidth={1}
+                  animationDuration={1000}
+                  animationEasing="ease-out"
                 >
-                  {platformDonutData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
+                  {platformDonutData.map((entry, index) => {
+                    const key = entry.name.toLowerCase();
+                    const gradMap = {
+                      instagram: 'instagramGrad',
+                      tiktok: 'tiktokGrad',
+                      youtube: 'youtubeGrad',
+                      facebook: 'facebookGrad'
+                    };
+                    return (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={`url(#${gradMap[key] || 'facebookGrad'})`}
+                      />
+                    );
+                  })}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
-                  verticalAlign="middle" 
+                <Legend
+                  verticalAlign="middle"
                   align="right"
                   layout="vertical"
                   iconType="circle"
-                  wrapperStyle={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}
+                  wrapperStyle={{ fontSize: '13px', fontWeight: '600' }}
+                  formatter={(value) => <span className="text-foreground">{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
           </Card>
 
-          {/* PLATFORM PERFORMANCE - Bar Chart */}
-          <Card className="p-6 md:p-card" hover={false}>
-            <div className="mb-6">
-              <h3 className="text-section-title text-text-primary mb-1">Platform Performance</h3>
-              <p className="text-body text-text-secondary">Engagement metrics by platform</p>
+          {/* Engagement Metrics Bar Chart */}
+          <Card className="p-7" hover={false}>
+            <div className="mb-7">
+              <h3 className="text-[22px] font-bold text-foreground mb-1">Engagement Metrics</h3>
+              <p className="text-[13px] text-muted-foreground">Performance by platform</p>
             </div>
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart data={platformBars}>
                 <CartesianGrid 
                   strokeDasharray="3 3" 
-                  stroke="rgba(255,255,255,0.05)" 
+                  stroke="currentColor"
+                  className="text-border opacity-50"
                   vertical={false}
                 />
                 <XAxis 
                   dataKey="platform" 
-                  stroke="rgba(255,255,255,0.4)" 
-                  style={{ fontSize: '12px' }}
-                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                  stroke="currentColor"
+                  className="text-muted-foreground"
+                  style={{ fontSize: '12px', fontWeight: '500' }}
+                  tickLine={false}
+                  axisLine={false}
+                  dy={10}
                 />
                 <YAxis 
-                  stroke="rgba(255,255,255,0.4)" 
-                  style={{ fontSize: '12px' }}
-                  tick={{ fill: 'rgba(255,255,255,0.6)' }}
+                  stroke="currentColor"
+                  className="text-muted-foreground"
+                  style={{ fontSize: '12px', fontWeight: '500' }}
                   tickFormatter={formatNumber}
+                  tickLine={false}
+                  axisLine={false}
+                  dx={-10}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(99, 102, 241, 0.05)' }} />
                 <Legend 
-                  wrapperStyle={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}
+                  wrapperStyle={{ fontSize: '13px', fontWeight: '600' }}
+                  formatter={(value) => <span className="text-foreground">{value}</span>}
                 />
-                <Bar dataKey="Views" fill="#3cbaff" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="Likes" fill="#7b61ff" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="Comments" fill="#E1306C" radius={[8, 8, 0, 0]} />
+                <defs>
+                  <linearGradient id="viewsGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#8B5CF6" />
+                    <stop offset="100%" stopColor="#675AFF" />
+                  </linearGradient>
+                  <linearGradient id="likesGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#A78BFA" />
+                    <stop offset="100%" stopColor="#8B5CF6" />
+                  </linearGradient>
+                  <linearGradient id="commentsGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#1ED48F" />
+                    <stop offset="100%" stopColor="#16C47F" />
+                  </linearGradient>
+                </defs>
+                <Bar dataKey="Views" fill="url(#viewsGrad)" radius={[9, 9, 0, 0]} />
+                <Bar dataKey="Likes" fill="url(#likesGrad)" radius={[9, 9, 0, 0]} />
+                <Bar dataKey="Comments" fill="url(#commentsGrad)" radius={[9, 9, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </Card>
         </div>
 
-        {/* TOP PERFORMING CONTENT - Premium Table */}
-        <Card className="p-6 md:p-card overflow-hidden" hover={false}>
-          <div className="mb-6">
-            <h3 className="text-section-title text-text-primary mb-1">Top Performing Content</h3>
-            <p className="text-body text-text-secondary">Your best posts by views</p>
+        {/* \ud83c\udfc6 TOP PERFORMING CONTENT TABLE - Premium with platform indicators */}
+        <Card className="p-7 animate-slide-up" style={{ animationDelay: '0.4s' }} hover={false}>
+          <div className="mb-7">
+            <h3 className="text-[22px] font-bold text-foreground mb-1">Top Performing Content</h3>
+            <p className="text-[13px] text-muted-foreground">Your best posts ranked by views</p>
           </div>
           
-          {/* Desktop Table */}
+          {/* Desktop Table - Premium hover effects */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[rgba(255,255,255,0.08)]">
-                  <th className="text-left py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Platform</th>
-                  <th className="text-right py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Views</th>
-                  <th className="text-right py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Likes</th>
-                  <th className="text-right py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Comments</th>
-                  <th className="text-right py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Shares</th>
-                  <th className="text-left py-3 px-4 text-label text-text-muted font-medium uppercase tracking-wide">Posted</th>
+                <tr className="border-b-2 border-border">
+                  <th className="text-left py-4 px-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Platform</th>
+                  <th className="text-right py-4 px-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Views</th>
+                  <th className="text-right py-4 px-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Likes</th>
+                  <th className="text-right py-4 px-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Comments</th>
+                  <th className="text-right py-4 px-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Shares</th>
+                  <th className="text-left py-4 px-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Date</th>
                 </tr>
               </thead>
               <tbody>
                 {(data.topPosts || []).map((post, idx) => {
-                  const platformColor = PLATFORM_COLORS[post.platform.toLowerCase()] || '#7b61ff';
+                  const platformKey = post.platform.toLowerCase();
+                  const platformColor = PLATFORM_COLORS[platformKey] || '#6366F1';
+                  
                   return (
                     <tr 
                       key={idx} 
-                      className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.03)] transition-colors duration-150"
+                      className="border-b border-border/40 table-row-hover group relative"
+                      style={{
+                        borderLeft: `3px solid transparent`,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderLeftColor = platformColor;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderLeftColor = 'transparent';
+                      }}
                     >
-                      <td className="py-3 px-4">
-                        <span 
-                          className="inline-flex items-center px-2.5 py-1 rounded-md text-label font-medium"
-                          style={{ 
-                            backgroundColor: `${platformColor}22`,
-                            color: platformColor 
-                          }}
-                        >
-                          {post.platform.charAt(0).toUpperCase() + post.platform.slice(1)}
-                        </span>
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          <PlatformLogo platform={post.platform} className="w-6 h-6" />
+                          <span className="text-[14px] font-semibold text-foreground capitalize">
+                            {post.platform}
+                          </span>
+                        </div>
                       </td>
-                      <td className="py-3 px-4 text-right text-body text-text-primary font-semibold">
+                      <td className="py-4 px-4 text-right text-[14px] font-bold text-foreground">
                         {formatNumber(post.views)}
                       </td>
-                      <td className="py-3 px-4 text-right text-body text-text-secondary">
+                      <td className="py-4 px-4 text-right text-[14px] text-muted-foreground font-medium">
                         {formatNumber(post.likes)}
                       </td>
-                      <td className="py-3 px-4 text-right text-body text-text-secondary">
+                      <td className="py-4 px-4 text-right text-[14px] text-muted-foreground font-medium">
                         {formatNumber(post.comments)}
                       </td>
-                      <td className="py-3 px-4 text-right text-body text-text-secondary">
+                      <td className="py-4 px-4 text-right text-[14px] text-muted-foreground font-medium">
                         {formatNumber(post.shares)}
                       </td>
-                      <td className="py-3 px-4 text-body text-text-secondary">
+                      <td className="py-4 px-4 text-[13px] text-muted-foreground">
                         {post.postedAt ? new Date(post.postedAt).toLocaleDateString('en-US', { 
                           month: 'short', 
                           day: 'numeric', 
@@ -364,26 +412,23 @@ export default function Dashboard() {
             </table>
           </div>
 
-          {/* Mobile Stacked Cards */}
+          {/* Mobile Cards - Platform accent bars */}
           <div className="md:hidden space-y-3">
             {(data.topPosts || []).map((post, idx) => {
-              const platformColor = PLATFORM_COLORS[post.platform.toLowerCase()] || '#7b61ff';
+              const platformKey = post.platform.toLowerCase();
               return (
                 <div 
                   key={idx}
-                  className="p-4 rounded-lg bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.05)]"
+                  className={`p-4 rounded-[16px] glass-card accent-bar-${platformKey}`}
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <span 
-                      className="inline-flex items-center px-2.5 py-1 rounded-md text-label font-medium"
-                      style={{ 
-                        backgroundColor: `${platformColor}22`,
-                        color: platformColor 
-                      }}
-                    >
-                      {post.platform.charAt(0).toUpperCase() + post.platform.slice(1)}
-                    </span>
-                    <span className="text-label text-text-muted">
+                    <div className="flex items-center gap-2.5">
+                      <PlatformLogo platform={post.platform} className="w-6 h-6" />
+                      <span className="text-[14px] font-semibold text-foreground capitalize">
+                        {post.platform}
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-muted-foreground font-medium">
                       {post.postedAt ? new Date(post.postedAt).toLocaleDateString('en-US', { 
                         month: 'short', 
                         day: 'numeric' 
@@ -392,20 +437,20 @@ export default function Dashboard() {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <p className="text-label text-text-muted">Views</p>
-                      <p className="text-body text-text-primary font-semibold">{formatNumber(post.views)}</p>
+                      <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide mb-1">Views</p>
+                      <p className="text-[15px] font-bold text-foreground">{formatNumber(post.views)}</p>
                     </div>
                     <div>
-                      <p className="text-label text-text-muted">Likes</p>
-                      <p className="text-body text-text-secondary">{formatNumber(post.likes)}</p>
+                      <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide mb-1">Likes</p>
+                      <p className="text-[15px] text-muted-foreground font-semibold">{formatNumber(post.likes)}</p>
                     </div>
                     <div>
-                      <p className="text-label text-text-muted">Comments</p>
-                      <p className="text-body text-text-secondary">{formatNumber(post.comments)}</p>
+                      <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide mb-1">Comments</p>
+                      <p className="text-[15px] text-muted-foreground font-semibold">{formatNumber(post.comments)}</p>
                     </div>
                     <div>
-                      <p className="text-label text-text-muted">Shares</p>
-                      <p className="text-body text-text-secondary">{formatNumber(post.shares)}</p>
+                      <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide mb-1">Shares</p>
+                      <p className="text-[15px] text-muted-foreground font-semibold">{formatNumber(post.shares)}</p>
                     </div>
                   </div>
                 </div>
@@ -414,20 +459,155 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        {/* PLATFORM DETAIL CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+        {/* \ud83d\udcf1 PLATFORM CARDS - With accent bars */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-slide-up" style={{ animationDelay: '0.5s' }}>
           {(data.perPlatform || []).map((plat) => (
             <PlatformCard
               key={plat.platform}
-              platform={plat.platform.charAt(0).toUpperCase() + plat.platform.slice(1)}
+              platform={plat.platform}
               views={formatNumber(plat.views)}
               engagement={plat.engagementRate?.toFixed(2) || '0.00'}
               posts={plat.posts}
-              color={PLATFORM_COLORS[plat.platform.toLowerCase()] || '#7b61ff'}
             />
           ))}
         </div>
       </div>
     </Layout>
   );
+}
+
+// Inline component for performance charts with toggle (UI only)
+function PerformanceCharts({ monthlyData, platformBars, perPlatformRaw, totalViews }) {
+  const [mode, setMode] = useState('trend'); // 'trend' | 'views' | 'comments'
+  const [hovered, setHovered] = useState(null);
+
+  const modes = [
+    { key: 'trend', label: 'Trend' },
+    { key: 'views', label: 'Views' },
+    { key: 'comments', label: 'Comments' },
+  ];
+
+  return (
+    <Card className="p-7 animate-slide-up" style={{ animationDelay: '0.2s' }} hover={false}>
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <h3 className="text-[22px] font-bold text-foreground mb-1">Performance</h3>
+          <p className="text-[13px] text-muted-foreground">{mode === 'trend' ? 'Monthly views across all platforms' : mode === 'views' ? 'Views by platform' : 'Comments by platform'}</p>
+        </div>
+        <div className="mini-toggle">
+          {modes.map(m => (
+            <button
+              key={m.key}
+              type="button"
+              className={m.key === mode ? 'active' : ''}
+              onClick={() => setMode(m.key)}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="h-[340px]">
+        {mode === 'trend' && (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={buildMultiLineMonthly(monthlyData, perPlatformRaw, totalViews)}>
+              <defs>
+                {/* Professional differentiated palette (cool progression) */}
+                <linearGradient id="fillTotal" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#675AFF" stopOpacity={0.46} />
+                  <stop offset="65%" stopColor="#675AFF" stopOpacity={0.10} />
+                  <stop offset="100%" stopColor="#675AFF" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="fillSeriesA" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#3D8BFF" stopOpacity={0.32} />
+                  <stop offset="100%" stopColor="#3D8BFF" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="fillSeriesB" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#5E6BFF" stopOpacity={0.30} />
+                  <stop offset="100%" stopColor="#5E6BFF" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="fillSeriesC" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#8366FF" stopOpacity={0.30} />
+                  <stop offset="100%" stopColor="#8366FF" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="fillSeriesD" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#B05CF6" stopOpacity={0.28} />
+                  <stop offset="100%" stopColor="#B05CF6" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border opacity-50" vertical={false} />
+              <XAxis dataKey="month" stroke="currentColor" className="text-muted-foreground" style={{ fontSize: '12px', fontWeight: '500' }} tickLine={false} axisLine={false} dy={10} />
+              <YAxis stroke="currentColor" className="text-muted-foreground" style={{ fontSize: '12px', fontWeight: '500' }} tickFormatter={formatNumber} tickLine={false} axisLine={false} dx={-10} />
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#675AFF', strokeWidth: 1, strokeDasharray: '5 5' }} />
+              <Legend wrapperStyle={{ fontSize: '12px' }} />
+              {/* Order: smaller platform fills first, total on top with blend */}
+              <Area type="monotone" dataKey="youtube" name="YouTube" stroke={hovered==='youtube'? '#3D8BFF':'#3D8BFF'} strokeWidth={hovered==='youtube'?2:1.4} fill="url(#fillSeriesA)" activeDot={{ r:4 }} opacity={hovered && hovered!=='youtube'?0.34:1} onMouseOver={() => setHovered('youtube')} onMouseOut={() => setHovered(null)} />
+              <Area type="monotone" dataKey="instagram" name="Instagram" stroke={hovered==='instagram'? '#5E6BFF':'#5E6BFF'} strokeWidth={hovered==='instagram'?2:1.4} fill="url(#fillSeriesB)" activeDot={{ r:4 }} opacity={hovered && hovered!=='instagram'?0.34:1} onMouseOver={() => setHovered('instagram')} onMouseOut={() => setHovered(null)} />
+              <Area type="monotone" dataKey="tiktok" name="TikTok" stroke={hovered==='tiktok'? '#8366FF':'#8366FF'} strokeWidth={hovered==='tiktok'?2:1.4} fill="url(#fillSeriesC)" activeDot={{ r:4 }} opacity={hovered && hovered!=='tiktok'?0.34:1} onMouseOver={() => setHovered('tiktok')} onMouseOut={() => setHovered(null)} />
+              <Area type="monotone" dataKey="facebook" name="Facebook" stroke={hovered==='facebook'? '#B05CF6':'#B05CF6'} strokeWidth={hovered==='facebook'?2:1.4} fill="url(#fillSeriesD)" activeDot={{ r:4 }} opacity={hovered && hovered!=='facebook'?0.34:1} onMouseOver={() => setHovered('facebook')} onMouseOut={() => setHovered(null)} />
+              <Area type="monotone" dataKey="total" name="Total" stroke="#675AFF" strokeWidth={hovered==='total'?3:2.4} fill="url(#fillTotal)" activeDot={{ r:5, stroke:'#8B5CF6', strokeWidth:2, fill:'#675AFF' }} opacity={hovered && hovered!=='total'?0.50:1} onMouseOver={() => setHovered('total')} onMouseOut={() => setHovered(null)} />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
+        {mode === 'views' && (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={platformBars}>
+              <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border opacity-50" vertical={false} />
+              <XAxis dataKey="platform" stroke="currentColor" className="text-muted-foreground" style={{ fontSize: '12px', fontWeight: '500' }} tickLine={false} axisLine={false} dy={10} />
+              <YAxis stroke="currentColor" className="text-muted-foreground" style={{ fontSize: '12px', fontWeight: '500' }} tickFormatter={formatNumber} tickLine={false} axisLine={false} dx={-10} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(99,102,241,0.05)' }} />
+              <defs>
+                <linearGradient id="viewsOnly" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#8B5CF6" />
+                  <stop offset="100%" stopColor="#675AFF" />
+                </linearGradient>
+              </defs>
+              <Bar dataKey="Views" fill="url(#viewsOnly)" radius={[9,9,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+        {mode === 'comments' && (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={platformBars}>
+              <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border opacity-50" vertical={false} />
+              <XAxis dataKey="platform" stroke="currentColor" className="text-muted-foreground" style={{ fontSize: '12px', fontWeight: '500' }} tickLine={false} axisLine={false} dy={10} />
+              <YAxis stroke="currentColor" className="text-muted-foreground" style={{ fontSize: '12px', fontWeight: '500' }} tickFormatter={formatNumber} tickLine={false} axisLine={false} dx={-10} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(99,102,241,0.05)' }} />
+              <defs>
+                <linearGradient id="commentsGradSingle" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#1ED48F" />
+                  <stop offset="100%" stopColor="#16C47F" />
+                </linearGradient>
+              </defs>
+              <Bar dataKey="Comments" fill="url(#commentsGradSingle)" radius={[9,9,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+// Build multi-line monthly data using proportional distribution (UI approximation only)
+function buildMultiLineMonthly(monthlyData, perPlatformRaw, totalViews) {
+  if (!monthlyData || monthlyData.length === 0) return [];
+  const shares = {};
+  const sumPlatformViews = perPlatformRaw.reduce((sum, p) => sum + (p.views || 0), 0) || totalViews || 0;
+  perPlatformRaw.forEach(p => {
+    const key = p.platform.toLowerCase();
+    shares[key] = sumPlatformViews > 0 ? (p.views || 0) / sumPlatformViews : 0;
+  });
+  // ensure keys exist even if platform missing
+  ['youtube','instagram','tiktok','facebook'].forEach(k => { if (shares[k] === undefined) shares[k] = 0; });
+  return monthlyData.map(m => {
+    const total = m.Views || 0;
+    return {
+      month: m.month,
+      total,
+      youtube: Math.round(total * shares.youtube),
+      instagram: Math.round(total * shares.instagram),
+      tiktok: Math.round(total * shares.tiktok),
+      facebook: Math.round(total * shares.facebook),
+    };
+  });
 }

@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import { LayoutDashboard, Upload, Sparkles, LogOut } from "lucide-react";
+import ThemeToggle from "../components/ui/ThemeToggle";
 
 export default function Layout({ children }) {
   const { logout } = useAuthStore();
@@ -18,20 +19,23 @@ export default function Layout({ children }) {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-navy-deep via-[#0e1119] to-[#0f1220]">
+    <div className="flex min-h-screen bg-light-bg dark:bg-dark-bg transition-colors duration-300">
       
-      {/* PREMIUM SIDEBAR - Desktop */}
-      <aside className="hidden md:flex md:flex-col w-64 bg-sidebar-gradient text-white px-6 py-8 border-r border-[rgba(255,255,255,0.05)]">
-        {/* Logo */}
-        <div className="mb-10">
-          <h1 className="text-[22px] font-semibold tracking-tight bg-gradient-to-r from-premium-purple to-premium-blue bg-clip-text text-transparent">
-            CreatorPulse
-          </h1>
-          <p className="text-label text-text-muted mt-1">Analytics Dashboard</p>
+      {/* \ud83d\udcbb PREMIUM SIDEBAR - Desktop (Linear/Stripe inspired) */}
+      <aside className="hidden md:flex md:flex-col w-72 glass-card-lg rounded-none border-r border-border px-7 py-8">
+        {/* Logo & Theme Toggle */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-[22px] font-bold gradient-text">
+              CreatorPulse
+            </h1>
+            <ThemeToggle />
+          </div>
+          <p className="text-[11px] text-muted-foreground font-medium tracking-wide">Analytics Platform</p>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 space-y-1">
+        {/* \ud83e\udded Navigation with gradient active states */}
+        <nav className="flex-1 space-y-2">
           {links.map((link) => {
             const Icon = link.icon;
             return (
@@ -39,23 +43,17 @@ export default function Layout({ children }) {
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                  `group flex items-center gap-3.5 px-4 py-3.5 rounded-[14px] transition-all duration-200 ${
                     isActive
-                      ? "bg-[rgba(123,97,255,0.15)] text-text-primary border-l-[3px] border-premium-purple shadow-purple-glow"
-                      : "text-text-secondary hover:bg-[rgba(255,255,255,0.05)] hover:text-text-primary border-l-[3px] border-transparent"
+                      ? "bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white shadow-glow-indigo"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <Icon 
-                      className={`w-5 h-5 transition-all duration-200 ${
-                        isActive 
-                          ? 'text-premium-purple drop-shadow-[0_0_8px_rgba(123,97,255,0.5)]' 
-                          : 'group-hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.3)]'
-                      }`} 
-                    />
-                    <span className="text-body font-medium">{link.label}</span>
+                    <Icon className={`w-5 h-5 ${isActive ? 'drop-shadow-sm' : ''}`} />
+                    <span className="text-[14px] font-semibold">{link.label}</span>
                   </>
                 )}
               </NavLink>
@@ -63,18 +61,18 @@ export default function Layout({ children }) {
           })}
         </nav>
 
-        {/* LOGOUT BUTTON */}
+        {/* \ud83d\udeaa Logout Button */}
         <button
           onClick={handleLogout}
-          className="flex items-center justify-center gap-2 w-full bg-[rgba(255,77,79,0.13)] hover:bg-[rgba(255,77,79,0.2)] text-status-danger py-2.5 rounded-lg transition-all duration-200 font-medium text-body border border-[rgba(255,77,79,0.2)]"
+          className="flex items-center justify-center gap-2.5 w-full bg-[#EF4444]/10 hover:bg-[#EF4444]/20 text-[#EF4444] py-3.5 rounded-[14px] transition-all duration-200 font-semibold text-[14px] border border-[#EF4444]/20 hover:border-[#EF4444]/30"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4.5 h-4.5" />
           Logout
         </button>
       </aside>
 
-      {/* MOBILE BOTTOM TAB BAR */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-sidebar-gradient border-t border-[rgba(255,255,255,0.08)] px-4 py-3 backdrop-blur-lg">
+      {/* \ud83d\udcf1 FLOATING BOTTOM TAB BAR - Mobile */}
+      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50 glass-card-lg rounded-[20px] border border-border px-3 py-3 shadow-glass-lg">
         <div className="flex items-center justify-around">
           {links.map((link) => {
             const Icon = link.icon;
@@ -83,42 +81,39 @@ export default function Layout({ children }) {
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-all duration-200 ${
+                  `flex flex-col items-center gap-1.5 px-3 py-2 rounded-[12px] transition-all duration-200 min-w-[70px] ${
                     isActive
-                      ? "text-premium-purple"
-                      : "text-text-muted"
+                      ? "bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] text-white"
+                      : "text-muted-foreground"
                   }`
                 }
               >
-                {({ isActive }) => (
-                  <>
-                    <Icon 
-                      className={`w-5 h-5 ${
-                        isActive ? 'drop-shadow-[0_0_8px_rgba(123,97,255,0.6)]' : ''
-                      }`} 
-                    />
-                    <span className="text-[10px] font-medium">{link.label}</span>
-                  </>
-                )}
+                <Icon className="w-5 h-5" />
+                <span className="text-[10px] font-semibold">{link.label}</span>
               </NavLink>
             );
           })}
           <button
             onClick={handleLogout}
-            className="flex flex-col items-center gap-1 px-4 py-2 rounded-lg text-status-danger"
+            className="flex flex-col items-center gap-1.5 px-3 py-2 rounded-[12px] text-[#EF4444] min-w-[70px]"
           >
             <LogOut className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Logout</span>
+            <span className="text-[10px] font-semibold">Logout</span>
           </button>
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 p-section md:p-8 text-text-primary overflow-y-auto pb-24 md:pb-8">
+      {/* \u2728 MAIN CONTENT AREA */}
+      <main className="flex-1 p-6 md:p-10 overflow-y-auto pb-28 md:pb-10">
         <div className="max-w-[1600px] mx-auto">
           {children}
         </div>
       </main>
+      
+      {/* \ud83c\udf19 Mobile Theme Toggle - Floating Top Right */}
+      <div className="md:hidden fixed top-5 right-5 z-40">
+        <ThemeToggle />
+      </div>
     </div>
   );
 }

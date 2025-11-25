@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
-import { LayoutDashboard, Upload, Sparkles, LogOut } from "lucide-react";
+import { LayoutDashboard, Upload, Sparkles, Lightbulb, LogOut } from "lucide-react";
 import ThemeToggle from "../components/ui/ThemeToggle";
 
 export default function Layout({ children }) {
@@ -16,6 +16,7 @@ export default function Layout({ children }) {
     { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { path: "/upload", label: "Upload", icon: Upload },
     { path: "/insights", label: "AI Insights", icon: Sparkles },
+    { path: "/recommendations", label: "Recommendations", icon: Lightbulb },
   ];
 
   return (

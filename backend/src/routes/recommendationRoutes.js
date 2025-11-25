@@ -1,7 +1,5 @@
-// src/routes/aiRoutes.js
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import { getAiInsights } from "../controllers/aiController.js";
 import {
   getRecommendations,
   clearRecommendationsCache,
@@ -10,7 +8,6 @@ import {
 
 const router = express.Router();
 
-router.get("/insights", authMiddleware, getAiInsights);
 router.get("/recommendations", authMiddleware, getRecommendations);
 router.post("/recommendations/clear-cache", authMiddleware, clearRecommendationsCache);
 router.post("/ask", authMiddleware, askRecommendationAI);

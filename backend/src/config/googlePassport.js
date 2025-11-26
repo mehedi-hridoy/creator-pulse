@@ -5,7 +5,7 @@ import User from "../models/User.js";
 
 const clientID = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-const callbackURL = process.env.GOOGLE_CALLBACK_URL || "http://localhost:5000/auth/google/callback";
+const callbackURL = process.env.GOOGLE_CALLBACK_URL || "https://api.creatorpulse.mehedihridoy.online/auth/google/callback";
 
 if (!clientID || !clientSecret) {
   console.warn("⚠️ [Google OAuth] Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET. Google login will be disabled.");

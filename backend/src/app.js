@@ -20,7 +20,8 @@ app.use(passport.initialize());
 
 
 // CORS setup (allow multiple dev origins and env override)
-const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173,http://localhost:5174").split(",");
+// Updated line to allow 5173 AND 5174
+const allowedOrigins = (process.env.CORS_ORIGINS || "https://creatorpulse.mehedihridoy.online,http://localhost:5173,http://localhost:5174").split(",");
 app.use(
   cors({
     origin: (origin, cb) => {

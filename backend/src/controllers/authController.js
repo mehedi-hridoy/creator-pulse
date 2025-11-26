@@ -13,7 +13,7 @@ export const googleStart = passport.authenticate("google", {
 export const googleCallback = [
   passport.authenticate("google", {
     session: false,
-    failureRedirect: "http://localhost:5173/login",
+    failureRedirect: "https://creatorpulse.mehedihridoy.online/login",
   }),
   (req, res) => {
     const token = createToken(req.user._id);
@@ -23,7 +23,7 @@ export const googleCallback = [
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.redirect(process.env.POST_OAUTH_REDIRECT || "http://localhost:5173/dashboard");
+    res.redirect(process.env.POST_OAUTH_REDIRECT || "https://creatorpulse.mehedihridoy.online/dashboard");
   },
 ];
 
@@ -33,8 +33,8 @@ export const googleStatus = (req, res) => {
     success: true,
     enabled,
     hasClientId: Boolean(process.env.GOOGLE_CLIENT_ID),
-    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:5000/auth/google/callback",
-    redirectAfter: process.env.POST_OAUTH_REDIRECT || "http://localhost:5173/dashboard",
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://api.creatorpulse.mehedihridoy.online/auth/google/callback",
+    redirectAfter: process.env.POST_OAUTH_REDIRECT || "https://creatorpulse.mehedihridoy.online/dashboard",
   });
 };
 

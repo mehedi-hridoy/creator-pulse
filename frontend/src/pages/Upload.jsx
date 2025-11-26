@@ -22,7 +22,7 @@ export default function Upload() {
 
     setClearing(true);
     try {
-      await axios.delete("http://localhost:5000/analytics/clear", {
+      await axios.delete("https://api.creatorpulse.mehedihridoy.online/analytics/clear", {
         withCredentials: true,
       });
       alert("All analytics data cleared successfully!");
@@ -48,7 +48,7 @@ export default function Upload() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/upload/json",
+        "https://api.creatorpulse.mehedihridoy.online/upload/json",
         formData,
         {
           withCredentials: true,

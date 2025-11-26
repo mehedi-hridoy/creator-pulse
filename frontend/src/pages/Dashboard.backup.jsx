@@ -29,7 +29,7 @@ import UserProfile from "../components/dashboard/UserProfile";
 import { Card, MetricCard, PlatformCard } from "../components/ui/Card";
 
 axios.defaults.withCredentials = true;
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://api.creatorpulse.mehedihridoy.online";
 
 // Platform color mapping (exact spec colors)
 const PLATFORM_COLORS = {

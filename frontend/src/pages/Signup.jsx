@@ -26,7 +26,7 @@ export default function Signup() {
     setError("");
     setLoading(true);
     try {
-      const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+      const API_BASE = import.meta.env.VITE_API_BASE || "https://api.creatorpulse.mehedihridoy.online";
       const response = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -51,7 +51,7 @@ export default function Signup() {
   };
 
   const handleGoogleSignup = () => {
-    const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+    const apiBase = import.meta.env.VITE_API_BASE || "https://api.creatorpulse.mehedihridoy.online";
     window.location.href = `${apiBase}/auth/google`;
   };
 

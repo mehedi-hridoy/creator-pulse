@@ -21,7 +21,7 @@ export default function Dashboard() {
   const { data, isLoading } = useQuery({
     queryKey: ["overview"],
     queryFn: async () => {
-      const res = await axios.get("http://localhost:5000/analytics/overview");
+      const res = await axios.get("https://api.creatorpulse.mehedihridoy.online/analytics/overview");
       return res.data.overview;
     },
   });

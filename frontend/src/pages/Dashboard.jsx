@@ -32,7 +32,7 @@ import { Card, MetricCard, PlatformCard } from "../components/ui/Card";
 import { PlatformLogo } from "../components/ui/PlatformLogos";
 
 axios.defaults.withCredentials = true;
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://api.creatorpulse.mehedihridoy.online";
 
 // \ud83c\udfa8 OFFICIAL PLATFORM COLORS (exact brand specifications)
 const PLATFORM_COLORS = {

@@ -11,7 +11,7 @@ import SummarySection from "../components/recommendations/SummarySection";
 import ContentIdeasGrid from "../components/recommendations/ContentIdeasGrid";
 import ChatPanel from "../components/recommendations/ChatPanel";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://api.creatorpulse.mehedihridoy.online";
 
 export default function Recommendations() {
   const { data, isLoading, error, refetch, isFetching } = useQuery({

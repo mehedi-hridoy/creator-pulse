@@ -1,289 +1,306 @@
-# CreatorPulse — AI Analytics Copilot
+# 🚀 CreatorPulse — AI-Powered Analytics for Content Creators
 
-CreatorPulse is a full‑stack SaaS that ingests creator analytics, normalizes multi‑platform data, and generates actionable recommendations and content ideas with an AI copilot. The experience is obsessively designed to feel world‑class and minimal (Linear/Vercel/Notion inspired) while remaining pragmatic to run.
+> Transform scattered social media metrics into actionable insights with AI-driven recommendations.
 
----
-
-## Problem Statement
-
-Creators and small teams struggle to translate scattered platform metrics into concrete, revenue‑driving actions. Existing tools either drown users in charts or provide generic advice without understanding their actual data.
-
-CreatorPulse solves this by:
-- Unifying analytics from multiple platforms into a common schema
-- Deriving posting windows, platform focus, risks, and themes via a Python “Data Brain”
-- Converting raw insights into clear narratives, prioritized actions, and content ideas with an AI copilot
-- Offering a premium, fast UI with a built‑in “Ask CreatorPulse” chat for follow‑ups
+A modern, full-stack SaaS platform that helps content creators and marketing teams make data-driven decisions across multiple social platforms.
 
 ---
 
-## Architecture Plan
+## ✨ What It Does
 
-High‑level view of the system boundaries and responsibilities:
+**CreatorPulse** analyzes your content performance across YouTube, Instagram, TikTok, and Facebook to provide:
 
-```
-[ React + Vite Frontend ]  ──axios──▶  [ Node/Express API ]  ──spawn──▶  [ Python Data Brain ]
-				 │                                 │                                │
-				 │                                 │                                └─ Heuristics over normalized data
-				 │                                 │
-				 │                                 ├──▶  [ OpenAI (LLM) ]  → narrative + Q&A answers
-				 │                                 │
-				 └──protected routes──────────────▶│
-																					 ▼
-																			[ MongoDB ]
-```
-
-Key components:
-- Frontend: SPA with React (Vite), Tailwind, Framer Motion; shadcn token usage; React Query for data.
-- Backend: Node/Express, Mongoose, Passport Google OAuth, JWT auth, file uploads with Multer.
-- AI Data Brain: Python script computes deterministic recommendations (posting windows, focus, alerts, themes).
-- LLM Layer: OpenAI converts numeric results into narratives and answers user questions.
-- Caching: In‑memory cache per user for recommendations (6h TTL) to avoid repeated Python/LLM work.
+- 📊 **Smart Analytics** - Unified dashboard showing performance across all platforms
+- ⏰ **Optimal Posting Times** - AI determines the best days and hours to post for maximum engagement
+- 🎯 **Platform Recommendations** - Data-driven advice on where to invest your time and resources
+- 💡 **Content Ideas** - AI-generated suggestions based on your top-performing content
+- 🤖 **AI Chat Assistant** - Ask questions about your analytics and get instant insights
+- ⚠️ **Growth Alerts** - Early warnings about declining trends or stagnation
 
 ---
 
-## System Design
+## 🎯 Key Features
 
-### Request Flows
+### For Creators
+- Upload analytics from multiple platforms in JSON format
+- Get personalized recommendations based on YOUR data
+- Understand what content resonates with your audience
+- Discover the best times to post for maximum reach
+- Chat with AI to explore your analytics deeper
 
-1) Upload JSON analytics
-```
-Client → POST /upload/json (auth, multer) → persist raw items to Mongo → normalize later in Data Brain
-```
-
-2) Get recommendations (primary feature)
-```
-Client → GET /ai/recommendations (auth)
-	↳ Cache hit? return cached payload
-	↳ Else: fetch user docs → shape payload → spawn Python Data Brain
-			→ parse JSON → call OpenAI for narrative → combine → cache 6h → respond
-```
-
-3) Ask CreatorPulse (Q&A)
-```
-Client → POST /ai/ask (auth, { question })
-	↳ Ensure we have recent recommendations (cache or quick compute)
-	↳ Ask OpenAI with the recommendations JSON as context → return formatted answer
-```
-
-### Resilience & Safety
-- Python deps are optional at runtime: Data Brain degrades gracefully if heavy libs are missing (uses pure‑Python branches).
-- LLM failures do not block core numeric results; the backend returns numbers even if narrative fails.
-- CORS locked to configured origins; cookies used for session; JWT for auth APIs.
-
-### Performance
-- React Query caches client data; server caches expensive recommendation computations for 6 hours.
-- Python computes per‑platform stats in O(n) over the uploaded posts.
+### For Businesses
+- **No Python Required** - 100% Node.js, deploys anywhere (including cPanel)
+- **Fast & Scalable** - Pure JavaScript analytics engine
+- **Secure** - JWT authentication, Google OAuth, encrypted passwords
+- **Modern Stack** - React 19, Node.js, MongoDB, OpenAI
+- **Production Ready** - Built-in caching, error handling, optimized builds
 
 ---
 
-## Database Plan
+## 🛠️ Tech Stack
 
-MongoDB with two core collections and room to expand.
+### Frontend
+- **React 19** with Vite for lightning-fast builds
+- **Tailwind CSS** for beautiful, responsive design
+- **Framer Motion** for smooth animations
+- **React Query** for efficient data fetching
+- **Recharts** for interactive visualizations
 
-### Collections
+### Backend
+- **Node.js + Express** RESTful API
+- **MongoDB** for flexible data storage
+- **OpenAI GPT-4** for intelligent insights
+- **Pure JavaScript** analytics (no Python dependencies)
+- **JWT + Google OAuth** for secure authentication
 
-1) `users`
-- Fields: `username`, `email` (unique), `password` (optional for Google‑only), `googleId`, timestamps
-- Auth: email/password via bcrypt, Google OAuth via Passport
-
-2) `analytics`
-- Fields: `userId` (ref User), `platform`, `postedAt`,
-	`metrics` (aggregate counters), `rawItems` (original posts array)
-- The Python Data Brain consumes `rawItems` to compute platform windows, alerts, and themes.
-
-### Recommended Indexes
-- `analytics: { userId: 1, platform: 1, postedAt: -1 }`
-- `users: { email: 1 }` unique
-
----
-
-## API Overview
-
-Base URL (dev): `http://localhost:5000`
-
-Auth (`/auth`)
-- `POST /register` — email signup
-- `POST /login` — email login
-- `POST /logout` — end session
-- `GET /me` — current user profile
-- `PATCH /update-profile` — update username/email
-- `GET /google` → `GET /google/callback` — Google OAuth
-- `GET /google/status` — OAuth status
-
-Upload (`/upload`)
-- `POST /json` — multipart upload of up to 10 JSON files (auth)
-
-Analytics (`/analytics`)
-- `GET /overview` — basic aggregates (auth)
-- `DELETE /clear` — delete all analytics for current user (auth)
-
-AI (`/ai`)
-- `GET /recommendations` — compute/cached recommendations + LLM narrative (auth)
-- `POST /recommendations/clear-cache` — clear server cache (auth)
-- `POST /ask` — ask follow‑up questions with recommendations as context (auth)
+### Analytics Engine
+- **100% JavaScript** - No external dependencies
+- **Statistical Analysis** - Trend detection, volatility analysis
+- **Pattern Recognition** - Content theme clustering
+- **Performance Optimized** - Direct function calls, no subprocess overhead
 
 ---
 
-## Frontend Tech Stack (versions)
+## 🚀 Quick Start
 
-- React `19.2.0`, React DOM `19.2.0`
-- Vite `7.2.4`
-- Tailwind CSS `3.4.18` (+ tokens via shadcn conventions)
-- Framer Motion `12.23.24`
-- React Router DOM `7.9.6`
-- React Query (`@tanstack/react-query`) `5.90.10`
-- Axios `1.13.2`
-- Lucide React `0.554.0`
-- Recharts `3.5.0`
-- Zustand `5.0.8`
+### Prerequisites
+- Node.js 18+ 
+- MongoDB (local or Atlas)
+- OpenAI API key
 
-Dev/Tooling
-- TypeScript `~5.9.3` (types enabled for DX)
-- ESLint `9.39.1`
-- @vitejs/plugin-react `5.1.1`
-
-Environment
-- `VITE_API_BASE` — backend URL (e.g., `http://localhost:5000` or your domain)
-
-### Frontend Implementation Details
-
-Key design & engineering decisions that elevate the UX and maintainability:
-
-- **State Strategy:** Split between server state (React Query) and client/UI state (Zustand). React Query handles caching, background refetch, stale timing, and request deduplication; Zustand stores ephemeral UI such as auth session and theme without introducing global re‑renders.
-- **Data Fetching & Resilience:** React Query wrappers provide consistent loading / error boundaries. StaleTime tuned (10m) for recommendations to avoid unnecessary recomputation; manual cache clear triggers regeneration.
-- **Design System Tokens:** Tailwind CSS custom CSS variables defined in `index.css` for light/dark themes (background, card, border, primary, muted). All semantic components reference these tokens ensuring instant theme parity.
-- **Component Architecture:** Page‑level containers (`pages/`) compose small presentational units under `components/recommendations/*` (PageHeader, HeroCard, SummarySection, ContentIdeasGrid, ChatPanel) promoting isolation and reuse.
-- **Animation Layer:** Framer Motion powers mount / hover / typing animations with minimal code; motion kept shallow (opacity/translate) for GPU efficiency.
-- **Accessibility & Semantics:** Consistent focus rings (`focus-visible:*`), descriptive button labels, semantic headings hierarchy (h1→h2→h3). Chat bubbles avoid exotic roles so screen readers can linearize content.
-- **Markdown Safe Rendering:** Naïve markdown from the AI is sanitized via string replacement ensuring no script injection while preserving emphasis and headings.
-- **Performance Considerations:** Critical CSS via Tailwind JIT; code splitting manageable through Vite’s build. Avoid heavy charting libraries except where needed (Recharts). No global context bloat—Zustand slices remain small.
-- **Dark/Light Harmony:** All colors route through HSL variables enabling systematic palette tweaks and consistent contrast ratios; no hardcoded hexes except micro‑gradient accents.
-- **Future Extensibility:** ChatPanel built to accept richer message objects (role, timestamp, feedback) → easy path to add memory or rating features.
-
----
-
-## Backend Tech Stack (versions)
-
-- Node.js (tested locally with 18/20), Express `5.1.0`
-- Mongoose `9.0.0` (MongoDB 6.x compatible)
-- JWT (`jsonwebtoken`) `9.0.2`
-- Passport `0.7.0` + `passport-google-oauth20` `2.0.0`
-- Multer `2.0.2` (uploads)
-- OpenAI SDK `6.9.1`
-- bcryptjs `3.0.3`
-- cookie-parser `1.4.7`, cors `2.8.5`, morgan `1.10.1`, dotenv `17.2.3`
-
-Python AI (Data Brain)
-- Python 3.10+/3.11
-- `pandas>=1.5`, `numpy>=1.23`, `scikit-learn>=1.2`, `python-dateutil>=2.8` (see `backend/ai/requirements.txt`)
-
-Key Environment Variables
-- `NODE_ENV`, `PORT` (default 5000)
-- `MONGODB_URI` — connection string
-- `JWT_SECRET` — 32+ char secret
-- `OPENAI_API_KEY` — for narrative/Q&A
-- `CLIENT_URL` — frontend origin for CORS & cookies
-- `CORS_ORIGINS` — comma‑separated allowed origins
-- `BRAND_NAME` — optional branding in responses
-- `PYTHON_BIN` — optional override (default `python3`)
-
-### Backend Implementation Details
-
-- **Layered Responsibilities:** Express routes are thin → controllers orchestrate data retrieval and transformation; services (`contentBrain.js`) encapsulate LLM interactions; Python script encapsulates deterministic analytics heuristics.
-- **Python Isolation:** `recommendationController` spawns `data_brain.py` via `child_process.spawn` with streamed stdout/stderr capture, avoiding blocking the Node event loop and permitting graceful error handling.
-- **Optional Dependencies & Degradation:** The Data Brain attempts to use pandas/numpy/scikit‑learn if available; falls back to pure JavaScript‑serializable list/loop logic, keeping functionality on constrained hosts (e.g., basic cPanel without compiled wheels).
-- **Caching Strategy:** In‑memory Map keyed by `userId` with 6h TTL reduces repeated Python computations and LLM calls. Explicit cache clear endpoint supports manual regeneration for updated uploads.
-- **LLM Resilience:** Narrative generation guarded by try/catch; failure returns numeric recommendations untouched ensuring core value even if OpenAI is transiently unavailable.
-- **Security Controls:** JWT auth middleware populates `req.userId`; CORS strictly whitelists configured origins; Google OAuth integration via Passport; passwords hashed with bcryptjs. Minimal attack surface—no eval, no dynamic code loading.
-- **Upload Handling:** Multer accepts up to 10 JSON files per request with size/quantity limits; originals stored in `rawItems` for transparency and later reprocessing.
-- **Data Shaping:** A normalization function (`fromDocsToPlatforms`) creates a platform→posts map consumed by Python for uniform heuristics (posting times, volatility, theme frequency).
-- **Error Surface:** Central error handler returns consistent JSON shape (`{ success: false, error }`) aiding frontend simplification. Python spawn errors bubble with enriched message.
-- **Extensibility:** Clear seams to add: persistent Redis cache, background queue (BullMQ) for batch analytics, feedback endpoint for reinforcement learning ranking.
-- **Environment Flexibility:** `PYTHON_BIN` override allows deployment on systems where `python3` might be symlinked differently; supports virtualenv activation via absolute path.
-- **Testing Strategy (Future):** Unit tests could stub `generateNarrative` and inject fixture analytics to validate Python bridging without calling the real LLM.
-
----
-
-## Local Development
-
-Prereqs: Node 18+ (or 20), Python 3.10+, MongoDB (local or Atlas).
+### Local Development
 
 ```bash
-# 1) Backend
+# 1. Clone the repository
+git clone https://github.com/mehedi-hridoy/creator-pulse.git
+cd creator-pulse
+
+# 2. Setup Backend
 cd backend
 npm install
 
-# optional: install Python libs for Data Brain
-python3 -m venv ai/venv
-source ai/venv/bin/activate
-pip install -r ai/requirements.txt
+# Create .env file (see Configuration section below)
+cp .env.example .env
+# Edit .env with your credentials
 
-# env
-cp .env.example .env  # or create .env with variables from this README
-npm run dev
+npm run dev  # Starts on http://localhost:5000
 
-# 2) Frontend
-cd ../frontend
-npm install
-npm run dev
+# 3. Setup Frontend (in a new terminal)
+cd frontend
+npm install --legacy-peer-deps
+npm run dev  # Starts on http://localhost:5173
 ```
 
-Default dev URLs
-- Frontend: `http://localhost:5173`
+### Configuration
+
+Create `backend/.env` with these variables:
+
+```env
+# Database
+MONGODB_URI=mongodb://localhost:27017/creatorpulse
+# OR use MongoDB Atlas:
+# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/creatorpulse
+
+# Authentication
+JWT_SECRET=your-super-secret-jwt-key-min-32-characters
+
+# OpenAI (required for AI features)
+OPENAI_API_KEY=sk-proj-your-openai-api-key
+
+# Google OAuth (optional)
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_CALLBACK_URL=http://localhost:5000/auth/google/callback
+POST_OAUTH_REDIRECT=http://localhost:5173/dashboard
+
+# CORS (for local development)
+CORS_ORIGINS=http://localhost:5173,http://localhost:5174
+
+# Server
+PORT=5000
+NODE_ENV=development
+```
+
+### Important: Local vs Production URLs
+
+**When running locally**, your configuration uses:
 - Backend: `http://localhost:5000`
+- Frontend: `http://localhost:5173`
+- CORS Origins: `http://localhost:5173`
+
+**When deploying to production** (e.g., `creatorpulse.mehedihridoy.online`), update:
+
+1. **Backend `.env`**:
+   ```env
+   CORS_ORIGINS=https://creatorpulse.mehedihridoy.online
+   GOOGLE_CALLBACK_URL=https://api.creatorpulse.mehedihridoy.online/auth/google/callback
+   POST_OAUTH_REDIRECT=https://creatorpulse.mehedihridoy.online/dashboard
+   NODE_ENV=production
+   ```
+
+2. **Frontend** - Update API URL in your frontend code:
+   ```javascript
+   // In frontend/src/stores/authStore.js or config file
+   const API_URL = 'https://api.creatorpulse.mehedihridoy.online'
+   ```
+
+3. **Google OAuth Console**:
+   - Add production callback URL: `https://api.creatorpulse.mehedihridoy.online/auth/google/callback`
+   - Add authorized origin: `https://creatorpulse.mehedihridoy.online`
 
 ---
 
-## Deployment Notes (quick)
+## 📦 Deployment
 
-You can deploy via:
-- cPanel (Node.js app for backend + static frontend `dist/`),
-- Docker Compose (backend + frontend + Mongo),
-- Managed platforms (Railway/Render/DigitalOcean App Platform).
+### Build for Production
 
-Minimum checklist:
-- Set production env vars (`MONGODB_URI`, `JWT_SECRET`, `OPENAI_API_KEY`, `CLIENT_URL`, `CORS_ORIGINS`, `NODE_ENV=production`)
-- Build frontend (`npm run build`) and serve via CDN/static hosting
-- Run backend behind HTTPS and configure CORS to frontend domain
-- Optional: PM2 for process management (if VPS), or platform‑native scaling
+```bash
+# Build Frontend
+cd frontend
+npm run build
+# Output: frontend/dist/
 
----
-
-## UI Highlights
-
-- Premium, minimal design with soft shadows, rounded cards, and subtle motion
-- Sticky header, gradient CTAs, and a polished chat interface with typing indicator
-- Fully responsive across sm/md/lg/xl, dark/light aware via design tokens
-
----
-
-## Future Enhancements
-
-- Persistent memory for Q&A (ground answers in historical performance)
-- Fine‑grained posting windows once timestamped posts are uploaded
-- Feedback loop for recommendation quality (accept/reject)
-- Background jobs & queues for batch analytics
-
----
-
-## Repo Structure (condensed)
-
-```
-backend/
-	ai/                # Python Data Brain
-	src/
-		controllers/     # auth, analytics, recommendations
-		models/          # Mongoose schemas (User, Analytics)
-		routes/          # /auth, /upload, /analytics, /ai
-frontend/
-	src/
-		pages/           # Login, Signup, Dashboard, Recommendations
-		components/      # UI + recommendations components
+# Backend runs directly (no build needed)
+cd backend
+npm start
 ```
 
+### Deploy to cPanel
+
+1. **Upload files** to your cPanel hosting
+2. **Setup Node.js App** in cPanel:
+   - Application Root: `creator-pulse/backend`
+   - Startup File: `src/server.js`
+   - Node Version: 18.x or higher
+3. **Set environment variables** (production URLs)
+4. **Upload `frontend/dist/`** to public_html
+5. **Run NPM Install** in cPanel Node.js app panel
+
+### Deploy to Other Platforms
+
+- **Vercel/Netlify** - Frontend (automatic from Git)
+- **Railway/Render** - Backend (automatic from Git)
+- **DigitalOcean** - Full-stack droplet
+- **Heroku** - Both frontend and backend
+
 ---
 
-## Credits
+## 📖 API Endpoints
 
-Built with care to balance product polish and engineering rigor. If this project resonated with you, I’d love to chat about building delightful, data‑driven products.
+### Authentication
+- `POST /auth/register` - Create account
+- `POST /auth/login` - Email login
+- `GET /auth/google` - Google OAuth
+- `GET /auth/me` - Get current user
+
+### Analytics
+- `POST /upload/json` - Upload platform analytics
+- `GET /analytics/overview` - Dashboard stats
+- `DELETE /analytics/clear` - Clear all data
+
+### AI Recommendations
+- `GET /ai/recommendations` - Get AI-powered insights
+- `POST /ai/ask` - Chat with AI about your data
+- `POST /ai/recommendations/clear-cache` - Force refresh
+
+---
+
+## 🎨 Screenshots
+
+[Add screenshots here of your dashboard, recommendations page, and chat interface]
+
+---
+
+## 🔒 Security Features
+
+- ✅ JWT token authentication
+- ✅ Bcrypt password hashing
+- ✅ Google OAuth 2.0 integration
+- ✅ CORS protection
+- ✅ Environment variable protection
+- ✅ MongoDB injection prevention
+- ✅ Rate limiting ready
+
+---
+
+## 🚀 Performance
+
+- **Fast Loading** - Optimized React builds with code splitting
+- **Efficient Caching** - 6-hour cache for analytics (configurable)
+- **Quick Analytics** - Direct JavaScript execution (~50-100ms)
+- **Responsive Design** - Works on mobile, tablet, desktop
+
+---
+
+## 📊 Analytics Features
+
+### Posting Schedule Analysis
+- Identifies best days and times to post
+- Platform-specific recommendations
+- Based on engagement rate and views
+
+### Platform Focus
+- Growth rate calculations
+- Engagement rate comparison
+- Investment recommendations (invest more, maintain, deprioritize)
+
+### Growth Alerts
+- Declining trend detection
+- High volatility warnings
+- Stagnation identification
+
+### Content Themes
+- Clusters content by performance
+- Identifies top-performing patterns
+- Provides example titles from each cluster
+
+---
+
+## 🛣️ Roadmap
+
+- [ ] Real-time analytics streaming
+- [ ] Team collaboration features
+- [ ] Advanced scheduling automation
+- [ ] Custom report generation
+- [ ] Mobile app (React Native)
+- [ ] Integration with platform APIs (auto-fetch data)
+
+---
+
+## 📄 License
+
+MIT License - feel free to use this project for personal or commercial purposes.
+
+---
+
+## 👨‍💻 Developer
+
+**Mehedi Hridoy**
+- GitHub: [@mehedi-hridoy](https://github.com/mehedi-hridoy)
+- Website: [mehedihridoy.online](https://mehedihridoy.online)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## 📞 Support
+
+For issues or questions:
+1. Open an issue on GitHub
+2. Contact through website
+3. Check the documentation
+
+---
+
+## ⭐ Show Your Support
+
+If you find this project helpful, please give it a ⭐ on GitHub!
+
+---
+
+
 

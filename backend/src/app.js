@@ -19,9 +19,17 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 
-// CORS setup (allow multiple dev origins and env override)
-// Updated line to allow 5173 AND 5174
-const allowedOrigins = (process.env.CORS_ORIGINS || "https://creatorpulse.mehedihridoy.online,http://localhost:5173,http://localhost:5174").split(",");
+// CORS setup (allow multiple dev/prod origins and env override)
+// Defaults include localhost (5173/5174) and production frontend domain
+const allowedOrigins = (
+  process.env.CORS_ORIGINS ||
+  [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://creatorpulse.mehedihridoy.online",
+    "http://creatorpulse.mehedihridoy.online",
+  ].join(",")
+).split(",");
 app.use(
   cors({
     origin: (origin, cb) => {

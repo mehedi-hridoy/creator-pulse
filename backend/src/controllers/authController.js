@@ -13,17 +13,17 @@ export const googleStart = passport.authenticate("google", {
 export const googleCallback = [
   passport.authenticate("google", {
     session: false,
-    failureRedirect: "https://creatorpulse.mehedihridoy.online/login",
+    failureRedirect: "http://localhost:5173/login",
   }),
   (req, res) => {
     const token = createToken(req.user._id);
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.redirect(process.env.POST_OAUTH_REDIRECT || "https://creatorpulse.mehedihridoy.online/dashboard");
+    res.redirect(process.env.POST_OAUTH_REDIRECT || "http://localhost:5173/dashboard");
   },
 ];
 
@@ -34,7 +34,7 @@ export const googleStatus = (req, res) => {
     enabled,
     hasClientId: Boolean(process.env.GOOGLE_CLIENT_ID),
     callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://api.creatorpulse.mehedihridoy.online/auth/google/callback",
-    redirectAfter: process.env.POST_OAUTH_REDIRECT || "https://creatorpulse.mehedihridoy.online/dashboard",
+    redirectAfter: process.env.POST_OAUTH_REDIRECT || "http://localhost:5173/dashboard",
   });
 };
 
@@ -45,11 +45,12 @@ const sendAuthCookie = (res, user) => {
     .cookie(COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
     .json({
       success: true,
+      token, // also return token for clients that prefer Authorization header
       user: {
         id: user._id,
         email: user.email,
@@ -117,7 +118,9 @@ export const me = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({ success: false, error: "Not authenticated" });
     }
-    res.json({ success: true, user });
+    // Also return a fresh token so clients using OAuth-only flows can switch to header auth
+    const token = createToken(req.userId);
+    res.json({ success: true, user, token });
   } catch (err) {
     next(err);
   }
@@ -127,7 +130,7 @@ export const logout = (req, res) => {
   res.clearCookie(COOKIE_NAME, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
   res.json({ success: true });
 };

@@ -6,6 +6,7 @@ import { parseYouTube } from "../services/parsers/parseYouTube.js";
 import { parseInstagram } from "../services/parsers/parseInstagram.js";
 import { parseTikTok } from "../services/parsers/parseTikTok.js";
 import { parseFacebook } from "../services/parsers/parseFacebook.js";
+import { parseGeneric } from "../services/parsers/parseGeneric.js";
 
 // normalization
 import { normalizeData } from "../services/normalizeData.js";
@@ -30,7 +31,21 @@ export const handleJsonUpload = async (req, res, next) => {
         }
 
         // 2. Detect which platform this JSON belongs to
-        const platform = detectPlatform(content);
+        const explicitKeys = ["platform", "platform_name", "source", "provider"];
+        let explicitPlatform = null;
+        for (const k of explicitKeys) {
+          const v = content && typeof content === "object" ? content[k] : undefined;
+          if (typeof v === "string" && v.trim()) {
+            const s = v.trim().toLowerCase();
+            if (["instagram", "insta", "ig"].includes(s)) explicitPlatform = "instagram";
+            else if (["youtube", "yt", "you_tube"].includes(s)) explicitPlatform = "youtube";
+            else if (["facebook", "fb", "meta-fb", "meta_fb"].includes(s)) explicitPlatform = "facebook";
+            else if (["tiktok", "tik tok", "tik_tok", "tt"].includes(s)) explicitPlatform = "tiktok";
+            if (explicitPlatform) break;
+          }
+        }
+
+        const platform = explicitPlatform || detectPlatform(content, file.originalname);
         console.log("Upload - Detected platform:", platform);
 
         if (!platform) {
@@ -42,13 +57,28 @@ export const handleJsonUpload = async (req, res, next) => {
           continue;
         }
 
-        // 3. Parse based on platform
+        // 3. Parse based on platform/schema
         let parsedData = [];
 
-        if (platform === "youtube") parsedData = parseYouTube(content);
-        else if (platform === "instagram") parsedData = parseInstagram(content);
-        else if (platform === "tiktok") parsedData = parseTikTok(content);
-        else if (platform === "facebook") parsedData = parseFacebook(content);
+        // If platform explicitly declared, first try generic schema (common CreatorPulse format)
+        if (explicitPlatform) {
+          parsedData = parseGeneric(content);
+          if (!parsedData || parsedData.length === 0) {
+            if (explicitPlatform === "youtube") parsedData = parseYouTube(content);
+            else if (explicitPlatform === "instagram") parsedData = parseInstagram(content);
+            else if (explicitPlatform === "tiktok") parsedData = parseTikTok(content);
+            else if (explicitPlatform === "facebook") parsedData = parseFacebook(content);
+          }
+        } else {
+          // No explicit platform: prefer generic only when content[] exists, else platform parsers
+          if (Array.isArray(content?.content)) parsedData = parseGeneric(content);
+          if (!parsedData || parsedData.length === 0) {
+            if (platform === "youtube") parsedData = parseYouTube(content);
+            else if (platform === "instagram") parsedData = parseInstagram(content);
+            else if (platform === "tiktok") parsedData = parseTikTok(content);
+            else if (platform === "facebook") parsedData = parseFacebook(content);
+          }
+        }
 
         console.log("Upload - Parsed data count:", parsedData?.length || 0);
 

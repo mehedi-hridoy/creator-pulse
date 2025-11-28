@@ -30,8 +30,25 @@ export const parseInstagram = (json) => {
     return [];
   }
 
-  console.log(`Instagram parser: Found ${posts.length} posts`);
-  console.log("Instagram parser: First post keys:", Object.keys(posts[0] || {}));
+  // Heuristic: ensure these look like IG posts to avoid false positives
+  const isIGPost = (p) =>
+    p?.media_type !== undefined ||
+    (typeof p?.permalink === "string" && p.permalink.includes("instagram.com")) ||
+    (typeof p?.media_url === "string" && p.media_url.includes("cdninstagram")) ||
+    p?.type === "reel" ||
+    p?.type === "photo" ||
+    (p?.caption !== undefined && p?.hashtags !== undefined) ||
+    p?.saves !== undefined ||
+    p?.retention !== undefined;
+
+  const igCount = posts.reduce((acc, p) => acc + (isIGPost(p) ? 1 : 0), 0);
+  if (igCount === 0) {
+    // Not an IG-like shape — return [] so detector can try other platforms
+    console.log("Instagram parser: No clear IG indicators found, skipping");
+    return [];
+  }
+
+  console.log(`Instagram parser: Found ${igCount}/${posts.length} posts with IG indicators`);
 
   return posts.map((post) => ({
     title: post.caption || post.title || post.description || "Instagram Post",

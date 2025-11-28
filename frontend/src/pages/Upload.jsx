@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Layout from "../layout/Layout";
 import axios from "axios";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://api.creatorpulse.mehedihridoy.online";
 
 export default function Upload() {
   const [file, setFile] = useState(null);
@@ -22,7 +23,7 @@ export default function Upload() {
 
     setClearing(true);
     try {
-      await axios.delete("https://api.creatorpulse.mehedihridoy.online/analytics/clear", {
+      await axios.delete(`${API_BASE}/analytics/clear`, {
         withCredentials: true,
       });
       alert("All analytics data cleared successfully!");
@@ -48,7 +49,7 @@ export default function Upload() {
 
     try {
       const res = await axios.post(
-        "https://api.creatorpulse.mehedihridoy.online/upload/json",
+        `${API_BASE}/upload/json`,
         formData,
         {
           withCredentials: true,
